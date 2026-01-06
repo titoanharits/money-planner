@@ -1,0 +1,70 @@
+<%# app/views/devise/registrations/new.html.erb %>
+<div class="min-h-screen flex items-center justify-center p-6 py-12">
+  <div class="w-full max-w-md bg-white/40 backdrop-blur-xl border border-white/50 shadow-glass rounded-4xl p-8 md:p-10">
+    
+    <div class="text-center mb-8">
+      <div class="inline-flex p-3 bg-linear-to-tr from-indigo-400 to-blue-500 rounded-2xl shadow-lg mb-4">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+        </svg>
+      </div>
+      <h2 class="text-2xl font-bold text-gray-800 tracking-tight">Create Account</h2>
+      <p class="text-gray-500 text-sm">Start your financial journey today</p>
+    </div>
+
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "space-y-4" }) do |f| %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <div class="group">
+        <%= f.label :name, "Full Name", class: "block text-xs font-semibold text-gray-500 mb-1.5 ml-1" %>
+        <%= f.text_field :name, autofocus: true, placeholder: "e.g. John Doe",
+            class: "w-full bg-white/60 border border-white/20 rounded-2xl py-3.5 px-5 text-gray-700 focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-300 shadow-sm" %>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4">
+        <div class="group">
+          <%= f.label :username, class: "block text-xs font-semibold text-gray-500 mb-1.5 ml-1" %>
+          <%= f.text_field :username, placeholder: "username",
+              class: "w-full bg-white/60 border border-white/20 rounded-2xl py-3.5 px-5 text-gray-700 focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-300 shadow-sm" %>
+        </div>
+
+        <div class="group">
+          <%= f.label :email, class: "block text-xs font-semibold text-gray-500 mb-1.5 ml-1" %>
+          <%= f.email_field :email, autocomplete: "email", placeholder: "hello@example.com",
+              class: "w-full bg-white/60 border border-white/20 rounded-2xl py-3.5 px-5 text-gray-700 focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-300 shadow-sm" %>
+        </div>
+      </div>
+
+      <div class="group">
+        <%= f.label :currency, "Preferred Currency", class: "block text-xs font-semibold text-gray-500 mb-1.5 ml-1" %>
+        <%= f.select :currency, User::SUPPORTED_CURRENCIES, {}, 
+            { class: "w-full bg-white/60 border border-white/20 rounded-2xl py-3.5 px-5 text-gray-700 focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-300 shadow-sm appearance-none" } %>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="group">
+          <%= f.label :password, class: "block text-xs font-semibold text-gray-500 mb-1.5 ml-1" %>
+          <%= f.password_field :password, placeholder: "••••••",
+              class: "w-full bg-white/60 border border-white/20 rounded-2xl py-3.5 px-5 text-gray-700 focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-300 shadow-sm" %>
+        </div>
+        <div class="group">
+          <%= f.label :password_confirmation, "Confirm", class: "block text-xs font-semibold text-gray-500 mb-1.5 ml-1" %>
+          <%= f.password_field :password_confirmation, placeholder: "••••••",
+              class: "w-full bg-white/60 border border-white/20 rounded-2xl py-3.5 px-5 text-gray-700 focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-300 shadow-sm" %>
+        </div>
+      </div>
+
+      <div class="pt-4">
+        <%= f.submit "Create Account", 
+            class: "w-full py-4 bg-gradient-to-r from-indigo-400 to-blue-500 text-white font-bold rounded-2xl shadow-lg shadow-indigo-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer" %>
+      </div>
+    <% end %>
+
+    <div class="mt-8 text-center">
+      <p class="text-sm text-gray-500">
+        Already have an account? 
+        <%= link_to "Sign In", new_session_path(resource_name), class: "text-blue-600 font-bold hover:underline" %>
+      </p>
+    </div>
+  </div>
+</div>
