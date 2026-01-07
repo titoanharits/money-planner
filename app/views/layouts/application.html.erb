@@ -23,10 +23,12 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body class="mesh-bg min-h-screen text-gray-800 antialiased pb-28">
+  <body class="bg-indigo-100 text-slate-900 antialiased pb-28">
     <%= render 'layouts/flash' %>
 
-    <main class="max-w-md mx-auto">
+    <%= render 'layouts/header' if user_signed_in? %>
+
+    <main class="max-w-md mx-auto px-4">
       <%= yield %>
     </main>
 

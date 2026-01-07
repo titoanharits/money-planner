@@ -5,6 +5,8 @@ Rails.application.routes.draw do
     root to: "dashboard#index", as: :authenticated_root
   end
 
+  resources :categories
+
   # Jika user belum login, root-nya adalah halaman login devise
   devise_scope :user do
     root to: "devise/sessions#new"

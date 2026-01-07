@@ -10,7 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_06_141516) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_06_152655) do
+  create_table "budgets", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.decimal "amount", precision: 15, scale: 2
+    t.bigint "category_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "month"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.integer "year"
+    t.index ["category_id"], name: "index_budgets_on_category_id"
+    t.index ["user_id"], name: "index_budgets_on_user_id"
+  end
+
+  create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.integer "category_type"
+    t.string "color"
+    t.datetime "created_at", null: false
+    t.string "icon"
+    t.json "metadata"
+    t.string "name"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_categories_on_user_id"
+  end
+
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "currency"
@@ -26,4 +50,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_06_141516) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
+
+  add_foreign_key "budgets", "categories"
+  add_foreign_key "budgets", "users"
+  add_foreign_key "categories", "users"
 end

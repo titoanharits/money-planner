@@ -1,27 +1,48 @@
+<%# app/views/layouts/_bottom_nav.html.erb %>
 <% if user_signed_in? %>
-  <nav class="fixed bottom-6 left-6 right-6 z-50 max-w-md mx-auto">
-    <div class="bg-white/70 backdrop-blur-2xl border border-white/40 shadow-glass rounded-4xl px-4 py-3 flex items-center justify-between">
-      <%= link_to authenticated_root_path, class: "p-2 rounded-2xl group transition-colors hover:bg-blue-500/10" do %>
-        <svg class="w-6 h-6 text-gray-400 group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+  <nav class="fixed bottom-0 left-0 right-0 z-50 bg-orange-50 border-t-2 border-slate-900 px-6 pb-4">
+    <div class="max-w-md mx-auto flex items-end justify-between">
+      
+      <%# Home %>
+      <%= link_to authenticated_root_path, class: "flex flex-col items-center gap-1 group" do %>
+        <div class="p-1 rounded-lg group-hover:bg-orange-100 transition-colors">
+					<i data-lucide="home" class="w-5 h-5 text-slate-900"></i>
+        </div>
+        <span class="text-2xs font-black uppercase tracking-wider">Home</span>
       <% end %>
 
-      <a href="#" class="p-2 rounded-2xl group transition-colors hover:bg-blue-500/10">
-        <svg class="w-6 h-6 text-gray-400 group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-      </a>
+      <%# Categories %>
+      <%= link_to categories_path, class: "flex flex-col items-center gap-1 group" do %>
+        <div class="p-1 rounded-lg group-hover:bg-orange-100 transition-colors">
+          <i data-lucide="wallet" class="w-5 h-5 text-slate-900"></i>
+        </div>
+        <span class="text-2xs font-black uppercase tracking-wider">Budget</span>
+      <% end %>
 
-      <div class="-mt-14">
-        <button class="w-16 h-16 bg-linear-to-tr from-emerald-400 to-blue-500 rounded-full shadow-lg shadow-blue-500/40 flex items-center justify-center text-white active:scale-90 transition-transform border-4 border-[#f8fafc]">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-        </button>
+      <%# Tombol Tengah (Add) %>
+      <div class="relative -top-8">
+        <%= link_to new_category_path, class: "w-16 h-16 bg-indigo-400 border-2 border-slate-900 rounded-full flex flex-col items-center justify-center text-white active:scale-95 transition-all" do %>
+					<i data-lucide="plus" class="w-6 h-6"></i>
+        <% end %>
+        <span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-2xs font-black uppercase tracking-wider text-slate-900">Add</span>
       </div>
 
-      <a href="#" class="p-2 rounded-2xl group transition-colors hover:bg-blue-500/10">
-        <svg class="w-6 h-6 text-gray-400 group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path></svg>
+      <%# Stats/Analytics %>
+      <a href="#" class="flex flex-col items-center gap-1 group">
+        <div class="p-1 rounded-lg group-hover:bg-orange-100 transition-colors">
+          <i data-lucide="arrow-right-left" class="w-5 h-5 text-slate-900"></i>
+        </div>
+        <span class="text-2xs font-black uppercase tracking-wider">History</span>
       </a>
 
-      <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: "p-2 rounded-2xl group transition-colors hover:bg-red-500/10" do %>
-        <svg class="w-6 h-6 text-gray-400 group-hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+      <%# Logout %>
+      <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: "flex flex-col items-center gap-1 group" do %>
+        <div class="p-1 rounded-lg group-hover:bg-red-50 transition-colors">
+					<i data-lucide="log-out" class="w-5 h-5 text-slate-900"></i>
+        </div>
+        <span class="text-2xs font-black uppercase tracking-wider">Exit</span>
       <% end %>
+
     </div>
   </nav>
 <% end %>

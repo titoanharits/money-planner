@@ -9,3 +9,9 @@ application.register("flash", FlashController)
 
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
+
+import PickerController from "./picker_controller"
+application.register("picker", PickerController)
+
+import ScrollHeaderController from "./scroll_header_controller"
+application.register("scroll-header", ScrollHeaderController)

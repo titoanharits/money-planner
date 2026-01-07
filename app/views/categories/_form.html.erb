@@ -1,0 +1,67 @@
+<%# app/views/categories/_form.html.erb %>
+<div data-controller="picker" class="space-y-8">
+  <%= form_with(model: category, class: "space-y-6") do |f| %>
+    
+    <%# 1. Icon Picker Section %>
+    <div class="flex flex-col items-center gap-4 mb-10">
+      <div class="relative">
+        <button type="button" data-action="click->picker#toggleEmojiPicker" 
+                class="w-24 h-24 bg-orange-100 border-2 border-slate-900 rounded-2xl flex items-center justify-center text-5xl active:scale-90 transition-all">
+          <span data-picker-target="iconPreview"><%= category.icon.presence || "🍕" %></span>
+        </button>
+        <div class="absolute -bottom-2 -right-2 bg-indigo-400 text-white p-2 rounded-xl border-2 border-slate-900">
+          <i data-lucide="pencil" class="w-4 h-4"></i>
+        </div>
+        
+        <%# Emoji Picker Container %>
+        <div data-picker-target="emojiPickerContainer" class="hidden absolute top-28 left-1/2 -translate-x-1/2 z-50 rounded-2xl overflow-hidden border-2 border-slate-900 bg-white">
+          <emoji-picker data-action="emoji-click->picker#selectEmoji" class="light"></emoji-picker>
+        </div>
+      </div>
+      <%= f.hidden_field :icon, data: { picker_target: "iconInput" }, value: category.icon.presence || "🍕" %>
+    </div>
+
+    <%# 2. Category Name Input %>
+    <div class="space-y-2">
+      <%= f.label :name, "Category Name", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+      <%= f.text_field :name, placeholder: "e.g. Shopping", 
+          class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-4 px-6 text-slate-900 placeholder:text-slate-300 focus:bg-orange-50 outline-none transition-all font-bold" %>
+    </div>
+
+    <%# 3. Color Selection %>
+    <div class="space-y-4">
+      <%= f.label :color, "Identity Color", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+      <%= f.hidden_field :color, data: { picker_target: "colorInput" }, value: category.color.presence || "#A7F3D0" %>
+      
+      <div class="grid grid-cols-5 gap-3 justify-items-center bg-slate-50 border-2 border-slate-900 p-4 rounded-2xl">
+        <% ['#FDE68A', '#A7F3D0', '#DDD6FE', '#FBCFE8', '#FFD1B3', '#93C5FD', '#FCA5A5', '#C4B5FD', '#D1D5DB', '#34D399'].each do |color_hex| %>
+          <button type="button" 
+                  data-action="click->picker#selectColor" 
+                  data-color="<%= color_hex %>"
+                  class="color-option w-10 h-10 rounded-xl border-2 border-slate-900 transition-all hover:scale-110 active:scale-90 <%= 'ring-4 ring-slate-900 scale-110' if category.color == color_hex %>"
+                  style="background-color: <%= color_hex %>;">
+          </button>
+        <% end %>
+      </div>
+    </div>
+
+    <%# 4. Budget Amount Input %>
+    <div class="space-y-2">
+      <%= label_tag :initial_budget, "Monthly Budget Limit", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+      <div class="relative">
+        <div class="absolute left-6 top-1/2 -translate-y-1/2 text-slate-900 font-black text-sm"><%= current_user.currency %></div>
+        <% current_amt = category.current_budget&.amount %>
+        <%= number_field_tag :initial_budget, current_amt, placeholder: "0", 
+            class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-4 pl-16 pr-6 text-slate-900 outline-none focus:bg-orange-50 transition-all font-black text-lg" %>
+      </div>
+    </div>
+
+    <%# 6. Form Actions %>
+    <div class="pt-6 space-y-4">
+      <%= f.submit category.new_record? ? "Create Category" : "Save Changes", 
+          class: "w-full py-4 bg-indigo-400 border-2 border-slate-900 text-white font-black uppercase tracking-widest rounded-2xl active:scale-95 transition-all cursor-pointer" %>
+      
+      <%= link_to "Discard Changes", categories_path, class: "block text-center text-xs font-black uppercase tracking-widest text-slate-400 hover:text-red-500 transition-colors" %>
+    </div>
+  <% end %>
+</div>
