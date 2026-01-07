@@ -1,5 +1,5 @@
 <div class="pb-8">
-  <div class="bg-indigo-400 border-2 border-slate-900 p-6 rounded-2xl mb-4">
+  <div class="animate-fade-up bg-indigo-400 border-2 border-slate-900 p-6 rounded-2xl mb-8">
     <div class="flex justify-between items-end mb-6">
       <div>
         <p class="text-2xs uppercase font-black text-indigo-900 tracking-widest mb-1">Total Budget</p>
@@ -10,9 +10,30 @@
         <p class="text-lg font-bold text-indigo-100"><%= format_money(@total_spent) %></p>
       </div>
     </div>
+    
+    <%# Progress Bar - Minimalist Style %>
     <div class="w-full bg-slate-900/20 border-2 border-slate-900 h-5 rounded-xl overflow-hidden">
-      <% overall_percent = @total_budget > 0 ? (@total_spent / @total_budget * 100).to_i : 0 %>
-      <div class="bg-orange-300 h-full border-r-2 border-slate-900 transition-all duration-1000" style="width: <%= [overall_percent, 100].min %>%"></div>
+      <% overall_percent = @total_budget > 0 ? ((@total_spent.to_f / @total_budget) * 100).to_i : 0 %>
+      <div class="bg-orange-300 h-full border-r-2 border-slate-900 transition-all duration-1000" 
+          style="width: <%= [overall_percent, 100].min %>%"></div>
+    </div>
+
+    <%# Bagian Info Sisa Budget di bawah Progress Bar %>
+    <div class="flex justify-between items-start mt-2">
+      <p class="text-2xs font-black text-indigo-900 uppercase">
+        <%= overall_percent %>% Used
+      </p>
+      
+      <% remaining_budget = @total_budget - @total_spent %>
+      <div class="text-right">
+        <p class="text-2xs font-black uppercase <%= remaining_budget < 0 ? 'text-red-600' : 'text-indigo-900' %>">
+          <% if remaining_budget < 0 %>
+            Over Budget: <%= format_money(remaining_budget.abs) %>
+          <% else %>
+            <%= format_money(remaining_budget) %> Remaining
+          <% end %>
+        </p>
+      </div>
     </div>
   </div>
 
@@ -30,8 +51,8 @@
     <% @categories.each do |category| %>
       <% 
         budget = category.current_budget
-        spent = 0 
-        percent = (budget && budget.amount > 0) ? (spent / budget.amount * 100).to_i : 0
+        spent = @category_spent_map[category.id] || 0 
+        percent = (budget && budget.amount > 0) ? ((spent.to_f / budget.amount) * 100).to_i : 0
       %>
       
       <div class="animate-fade-up group bg-white border-2 border-slate-900 rounded-2xl overflow-hidden transition-all active:scale-[0.98]">

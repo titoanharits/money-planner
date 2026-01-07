@@ -4,6 +4,9 @@
 
 import { application } from "./application"
 
+import DatepickerController from "./datepicker_controller"
+application.register("datepicker", DatepickerController)
+
 import FlashController from "./flash_controller"
 application.register("flash", FlashController)
 

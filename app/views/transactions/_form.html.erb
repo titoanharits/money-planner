@@ -1,0 +1,61 @@
+<%# app/views/transactions/_form.html.erb %>
+<%= form_with(model: transaction, class: "space-y-6") do |f| %>
+  
+  <%# Amount Input (Besar) %>
+  <div class="bg-indigo-400 border-2 border-slate-900 p-6 rounded-3xl mb-8 text-white">
+    <%= f.label :amount, "How much?", class: "block text-[10px] font-black uppercase tracking-widest mb-2 opacity-80" %>
+    <div class="flex items-center">
+      <span class="text-2xl font-black mr-2"><%= current_user.currency %></span>
+      <%= f.number_field :amount, placeholder: "0", step: :any,
+          class: "bg-transparent text-4xl font-black placeholder:text-white/40 border-none focus:ring-0 w-full p-0 outline-none" %>
+    </div>
+  </div>
+
+  <%# Description %>
+  <div class="space-y-2">
+    <%= f.label :description, "What's this for?", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+    <%= f.text_field :description, placeholder: "e.g. Starbucks Coffee", 
+        class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-4 px-6 text-slate-900 font-bold focus:bg-orange-50 transition-all outline-none" %>
+  </div>
+
+  <%# Category Dropdown %>
+  <div class="space-y-2">
+    <%= f.label :category_id, "Category", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+    <div class="relative">
+      <%# Mengelompokkan kategori berdasarkan Tipenya %>
+      <%= f.grouped_collection_select :category_id, 
+          [Struct.new(:type, :categories).new('Expenses', Category.expense), 
+          Struct.new(:type, :categories).new('Incomes', Category.income)], 
+          :categories, :type, :id, :name, 
+          { prompt: "Select category..." }, 
+          { class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-4 px-6 text-slate-900 appearance-none font-bold outline-none" } %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <%# Date Input %>
+    <div class="space-y-2">
+      <%= f.label :date, "Date", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+      <%= f.text_field :date, 
+          value: f.object.date || Date.today.strftime("%d/%m/%Y"),
+          autocomplete: "off",
+          data: { controller: "datepicker", type: "date" },
+          class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-4 px-4 text-slate-900 font-bold outline-none cursor-pointer focus:bg-orange-50 transition-all" %>
+    </div>
+
+    <%# Time Input %>
+    <div class="space-y-2">
+      <%= f.label :time, "Time", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+      <%= f.text_field :time, 
+          value: f.object.time&.strftime("%H:%M") || Time.now.strftime("%H:%M"),
+          autocomplete: "off",
+          data: { controller: "datepicker", type: "time" },
+          class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-4 px-4 text-slate-900 font-bold outline-none cursor-pointer focus:bg-orange-50 transition-all" %>
+    </div>
+  </div>
+
+  <div class="pt-6">
+    <%= f.submit "Save Transaction", 
+        class: "w-full py-4 bg-orange-300 border-2 border-slate-900 text-slate-900 font-black uppercase tracking-widest rounded-2xl active:scale-95 transition-all cursor-pointer" %>
+  </div>
+<% end %>

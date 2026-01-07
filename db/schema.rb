@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_06_152655) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_07_051030) do
   create_table "budgets", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.decimal "amount", precision: 15, scale: 2
     t.bigint "category_id", null: false
@@ -35,6 +35,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_06_152655) do
     t.index ["user_id"], name: "index_categories_on_user_id"
   end
 
+  create_table "transactions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.decimal "amount", precision: 10
+    t.bigint "category_id", null: false
+    t.datetime "created_at", null: false
+    t.date "date"
+    t.string "description"
+    t.time "time"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["category_id"], name: "index_transactions_on_category_id"
+    t.index ["user_id"], name: "index_transactions_on_user_id"
+  end
+
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "currency"
@@ -54,4 +67,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_06_152655) do
   add_foreign_key "budgets", "categories"
   add_foreign_key "budgets", "users"
   add_foreign_key "categories", "users"
+  add_foreign_key "transactions", "categories"
+  add_foreign_key "transactions", "users"
 end

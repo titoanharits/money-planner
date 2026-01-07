@@ -1,7 +1,7 @@
 class Category < ApplicationRecord
   belongs_to :user
   has_many :budgets, dependent: :destroy
-  # has_many :transactions # Untuk pengembangan nanti
+  has_many :transactions, dependent: :destroy
 
   enum :category_type, { expense: 0, income: 1 }
 

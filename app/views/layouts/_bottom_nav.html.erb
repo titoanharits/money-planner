@@ -19,21 +19,21 @@
         <span class="text-2xs font-black uppercase tracking-wider">Budget</span>
       <% end %>
 
-      <%# Tombol Tengah (Add) %>
+      <%# Add Button %>
       <div class="relative -top-8">
-        <%= link_to new_category_path, class: "w-16 h-16 bg-indigo-400 border-2 border-slate-900 rounded-full flex flex-col items-center justify-center text-white active:scale-95 transition-all" do %>
+        <%= link_to new_transaction_path, class: "w-16 h-16 bg-indigo-400 border-2 border-slate-900 rounded-full flex flex-col items-center justify-center text-white active:scale-95 transition-all" do %>
 					<i data-lucide="plus" class="w-6 h-6"></i>
         <% end %>
         <span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-2xs font-black uppercase tracking-wider text-slate-900">Add</span>
       </div>
 
-      <%# Stats/Analytics %>
-      <a href="#" class="flex flex-col items-center gap-1 group">
+      <%# History Transaction %>
+      <%= link_to transactions_path, class: "flex flex-col items-center gap-1 group" do %>
         <div class="p-1 rounded-lg group-hover:bg-orange-100 transition-colors">
           <i data-lucide="arrow-right-left" class="w-5 h-5 text-slate-900"></i>
         </div>
         <span class="text-2xs font-black uppercase tracking-wider">History</span>
-      </a>
+      <% end %>
 
       <%# Logout %>
       <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: "flex flex-col items-center gap-1 group" do %>

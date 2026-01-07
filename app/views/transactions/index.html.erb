@@ -1,0 +1,69 @@
+<div class="pb-12 space-y-8 animate-fade-up ">
+  <% @transactions_by_date.each do |date, transactions| %>
+    <%# Container grup tetap butuh z-index saat ada menu aktif %>
+    <div class="relative has-[[data-dropdown-toggle][aria-expanded='true']]:z-50">
+      
+      <%# Group Header Tanggal %>
+      <div class="flex items-center gap-4 mb-4">
+        <h3 class="font-black text-slate-900 uppercase text-xs tracking-widest">
+          <%= date == Date.today ? "Today" : (date == Date.yesterday ? "Yesterday" : date.strftime("%d %B %Y")) %>
+        </h3>
+        <div class="flex-1 h-0.5 bg-slate-900/10"></div>
+      </div>
+
+      <div class="space-y-3">
+        <% transactions.each do |transaction| %>
+          <div class="relative w-full">
+            
+            <%# Trigger: Card Transaksi sebagai Button %>
+            <button id="dropdownBtn-<%= transaction.id %>" 
+                    data-dropdown-toggle="dropdown-<%= transaction.id %>"
+                    data-dropdown-placement="bottom-end"
+                    class="w-full text-left bg-white border-2 border-slate-900 p-4 rounded-2xl flex items-center gap-4 active:scale-[0.98] transition-all cursor-pointer" 
+                    type="button">
+              
+              <div class="w-13 h-13 rounded-xl border-2 border-slate-900 flex items-center justify-center text-3xl shrink-0" 
+                   style="background-color: <%= transaction.category.color %>;">
+                <%= transaction.category.icon %>
+              </div>
+
+              <div class="flex-1 min-w-0">
+                <p class="font-black text-sm text-slate-900 uppercase"><%= transaction.description.presence || transaction.category.name %></p>
+                <p class="text-xs font-bold text-slate-400 uppercase"><%= transaction.category.name %></p>
+                <p class="text-xs font-bold text-slate-400 uppercase"><%= transaction.time&.strftime("%H:%M") %></p>
+              </div>
+
+              <div class="text-right shrink-0">
+                <p class="font-black text-sm <%= transaction.category.category_type == 'expense' ? 'text-orange-400' : 'text-indigo-400' %>">
+                  <%= transaction.category.category_type == 'expense' ? '-' : '+' %>
+                  <%= format_money(transaction.amount) %>
+                </p>
+              </div>
+            </button>
+
+            <%# Menu Dropdown Flowbite %>
+            <div id="dropdown-<%= transaction.id %>" 
+                 class="hidden z-50 w-44 bg-white border-2 border-slate-900 rounded-xl overflow-hidden divide-y-2 divide-slate-900">
+              <ul class="text-xs font-black uppercase text-slate-900">
+                <li>
+                  <%= link_to edit_transaction_path(transaction), class: "flex items-center gap-3 px-4 py-3 hover:bg-indigo-50 transition-colors" do %>
+                    <i class="w-4 h-4" data-lucide="pencil"></i>
+                    Edit
+                  <% end %>
+                </li>
+                <li>
+                  <%= link_to transaction_path(transaction), 
+                              data: { turbo_method: :delete, turbo_confirm: "Hapus transaksi ini?" }, 
+                              class: "flex items-center gap-3 px-4 py-3 text-rose-500 hover:bg-rose-50 transition-colors" do %>
+                    <i class="w-4 h-4" data-lucide="trash"></i>
+                    Delete
+                  <% end %>
+                </li>
+              </ul>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

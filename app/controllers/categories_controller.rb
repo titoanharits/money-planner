@@ -4,11 +4,19 @@ class CategoriesController < ApplicationController
   before_action :set_page_title
 
   def index
+    start_date = Date.today.beginning_of_month
+    end_date   = Date.today.end_of_month
+
     @categories = current_user.categories.where(category_type: 0).includes(:budgets).order(name: :asc)
     @total_budget = current_user.budgets.where(month: Date.today.month, year: Date.today.year).sum(:amount)
 
-    # Placeholder untuk total pengeluaran (akan dihubungkan saat modul Transaction selesai)
-    @total_spent = 0
+    @category_spent_map = current_user.transactions
+                                    .joins(:category)
+                                    .where(categories: { category_type: 0 })
+                                    .where(date: start_date..end_date)
+                                    .group(:category_id)
+                                    .sum(:amount)
+    @total_spent = @category_spent_map.values.sum 
   end
 
   def new
@@ -59,17 +67,29 @@ class CategoriesController < ApplicationController
     end
   end
 
-    def show
-    end
+  def show
+    @category = current_user.categories.find(params[:id])
 
-    def destroy
-      if @category.destroy
-        # Menggunakan flash notice yang sudah kita beri style border hitam sebelumnya
-        redirect_to categories_path, notice: "Category was successfully deleted."
-      else
-        redirect_to categories_path, alert: "Failed to delete category."
-      end
+    start_date = Date.today.beginning_of_month
+    end_date   = Date.today.end_of_month
+
+    @transactions = @category.transactions
+                            .where(date: start_date..end_date)
+                            .order(date: :desc, created_at: :desc)
+
+    @transactions_by_date = @transactions.group_by(&:date)
+
+    @total_spent = @transactions.sum(:amount)
+  end
+
+  def destroy
+    if @category.destroy
+      # Menggunakan flash notice yang sudah kita beri style border hitam sebelumnya
+      redirect_to categories_path, notice: "Category was successfully deleted."
+    else
+      redirect_to categories_path, alert: "Failed to delete category."
     end
+  end
 
   private
   def set_page_title
