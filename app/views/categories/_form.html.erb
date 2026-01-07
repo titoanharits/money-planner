@@ -45,8 +45,22 @@
       </div>
     </div>
 
-    <%# 4. Budget Amount Input %>
+    <%# 4. Category Type Select %>
     <div class="space-y-2">
+      <%= f.label :category_type, "Transaction Type", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+      <div class="relative">
+        <%= f.select :category_type, 
+            Category.category_types.keys.map { |k| [k.humanize, k] }, 
+            {}, 
+            { 
+              class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-4 px-6 text-slate-900 appearance-none outline-none font-bold focus:bg-orange-50 transition-all",
+              data: { action: "change->picker#toggleBudget" } 
+            } %>
+      </div>
+    </div>
+
+    <%# 5. Budget Amount Input %>
+    <div data-picker-target="budgetContainer" class="space-y-2 <%= 'hidden' if category.income? %>">
       <%= label_tag :initial_budget, "Monthly Budget Limit", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
       <div class="relative">
         <div class="absolute left-6 top-1/2 -translate-y-1/2 text-slate-900 font-black text-sm"><%= current_user.currency %></div>

@@ -1,6 +1,7 @@
 class CategoriesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_category, only: [ :edit, :update, :show, :destroy ]
+  before_action :set_page_title
 
   def index
     @categories = current_user.categories.where(category_type: 0).includes(:budgets).order(name: :asc)
@@ -16,8 +17,7 @@ class CategoriesController < ApplicationController
 
   def create
     @category = current_user.categories.new(category_params)
-    @category.category_type = 0 # Set default ke expense
-    
+
     if @category.save
       # Jika budget diisi, buat record budget untuk bulan ini
       if params[:initial_budget].present?
@@ -72,6 +72,9 @@ class CategoriesController < ApplicationController
     end
 
   private
+  def set_page_title
+    @page_title = "My Budget"
+  end
 
   def set_category
     @category = current_user.categories.find(params[:id])

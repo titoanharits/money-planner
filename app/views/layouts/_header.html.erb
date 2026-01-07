@@ -6,17 +6,8 @@
 >
   <div class="max-w-md mx-auto flex items-center justify-between">
     <div class="flex items-center gap-4">
-      <%# Tombol Back %>
-      <%# unless current_page?(authenticated_root_path) %>
-        <%#= link_to :back, class: "w-10 h-10 border-2 border-slate-900 rounded-xl flex items-center justify-center bg-white hover:bg-orange-50 active:scale-90 transition-all" do %>
-          <%# <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-            <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
-          </svg> %>
-        <%# end %>
-      <%# end %>
-
       <h1 class="text-xl font-black tracking-tight text-slate-900">
-        <%= content_for(:title) || "Money Planner" %>
+        <%= @page_title || "Money Planner" %>
       </h1>
     </div>
     
