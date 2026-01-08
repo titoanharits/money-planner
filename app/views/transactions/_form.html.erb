@@ -53,14 +53,14 @@
     </div>
 
     <%# Time Input %>
-    <div class="space-y-2">
-      <%= f.label :time, "Time", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
-      <%= f.text_field :time, 
-          value: f.object.time&.strftime("%H:%M") || Time.now.strftime("%H:%M"),
-          autocomplete: "off",
-          data: { controller: "datepicker", type: "time" },
-          class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-4 px-4 text-slate-900 font-bold outline-none cursor-pointer focus:bg-orange-50 transition-all" %>
-    </div>
+      <div class="space-y-2">
+        <%= f.label :time, "Time", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+        <%= f.text_field :time, 
+            value: f.object.time&.strftime("%H:%M") || Time.current.strftime("%H:%M"),
+            autocomplete: "off",
+            data: { controller: "datepicker", type: "time" },
+            class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-4 px-4 text-slate-900 font-bold outline-none cursor-pointer focus:bg-orange-50 transition-all" %>
+      </div>
   </div>
 
   <div class="pt-6">

@@ -7,7 +7,7 @@ class Transaction < ApplicationRecord
   validates :amount, numericality: { greater_than: 0 }
   validates :date, :category_id, :user_id, presence: true
 
-  scope :recent, -> { order(date: :desc, created_at: :desc) }
+  scope :recent, -> { order(date: :desc, time: :desc) }
   scope :by_month, ->(date = Date.today) { 
     where(date: date.beginning_of_month..date.end_of_month) 
   }
