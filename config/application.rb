@@ -18,7 +18,7 @@ module MoneyPlanner
 
 
     config.time_zone = 'Jakarta' # Mengatur zona waktu ke WIB (UTC+7)
-    config.active_record.default_timezone = :utc
+    config.active_record.default_timezone = :local
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
