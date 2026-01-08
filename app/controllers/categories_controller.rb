@@ -4,11 +4,16 @@ class CategoriesController < ApplicationController
   before_action :set_page_title
 
   def index
-    @categories = current_user.categories.expense.includes(:budgets)
+    @expense_categories = current_user.categories.expense.includes(:budgets)
+    @income_categories = current_user.categories.income
 
     @total_budget = current_user.total_monthly_budget
+    @total_spent = current_user.monthly_expense # Total dari transaksi expense
+    @total_income = current_user.monthly_income  # Total dari transaksi income
+
     @category_spent_map = current_user.expenses_by_category_map
-    @total_spent = current_user.monthly_expense
+    # Map untuk income (pemasukan per kategori)
+    @category_income_map = current_user.transactions.by_month.incomes.group(:category_id).sum(:amount)
   end
 
   def new

@@ -2,12 +2,21 @@
 <%= form_with(model: transaction, class: "space-y-6") do |f| %>
   
   <%# Amount Input (Besar) %>
-  <div class="bg-indigo-400 border-2 border-slate-900 p-6 rounded-3xl mb-8 text-white">
+  <div class="bg-indigo-400 border-2 border-slate-900 p-6 rounded-3xl mb-8 text-white" data-controller="currency">
     <%= f.label :amount, "How much?", class: "block text-[10px] font-black uppercase tracking-widest mb-2 opacity-80" %>
+    
     <div class="flex items-center">
       <span class="text-2xl font-black mr-2"><%= current_user.currency %></span>
-      <%= f.number_field :amount, placeholder: "0", step: :any,
-          class: "bg-transparent text-4xl font-black placeholder:text-white/40 border-none focus:ring-0 w-full p-0 outline-none" %>
+      
+      <%# Hidden field untuk menyimpan data asli (angka murni) %>
+      <%= f.hidden_field :amount, data: { currency_target: "hidden" } %>
+
+      <%# Text field untuk tampilan yang otomatis terformat %>
+      <input type="text" 
+            placeholder="0"
+            data-currency-target="display"
+            data-action="input->currency#handleInput"
+            class="bg-transparent text-4xl font-black placeholder:text-white/40 border-none focus:ring-0 w-full p-0 outline-none" />
     </div>
   </div>
 
@@ -24,10 +33,10 @@
     <div class="relative">
       <%# Mengelompokkan kategori berdasarkan Tipenya %>
       <%= f.grouped_collection_select :category_id, 
-          [Struct.new(:type, :categories).new('Expenses', Category.expense), 
-          Struct.new(:type, :categories).new('Incomes', Category.income)], 
+          [Struct.new(:type, :categories).new('Expenses', current_user.categories.expense), 
+          Struct.new(:type, :categories).new('Incomes', current_user.categories.income)], 
           :categories, :type, :id, :name, 
-          { prompt: "Select category..." }, 
+          { prompt: "category..." }, 
           { class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-4 px-6 text-slate-900 appearance-none font-bold outline-none" } %>
     </div>
   </div>

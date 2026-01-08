@@ -58,4 +58,8 @@ class User < ApplicationRecord
 
     { percent: percent, status: status, color: color, advice: advice }
   end
+
+  def needs_onboarding?
+    categories.empty? && budgets.empty?
+  end
 end

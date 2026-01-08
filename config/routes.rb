@@ -8,6 +8,10 @@ Rails.application.routes.draw do
 
   resources :categories
   resources :transactions
+  scope :onboarding do
+    get  'start',    to: 'onboarding#start',    as: :onboarding_start
+    post 'generate', to: 'onboarding#generate', as: :onboarding_generate
+  end
 
   # Jika user belum login, root-nya adalah halaman login devise
   devise_scope :user do

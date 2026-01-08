@@ -1,92 +1,144 @@
-<div class="pb-8">
-  <div class="animate-fade-up bg-indigo-400 border-2 border-slate-900 p-6 rounded-2xl mb-8">
-    <div class="flex justify-between items-end mb-6">
-      <div>
-        <p class="text-2xs uppercase font-black text-indigo-900 tracking-widest mb-1">Total Budget</p>
-        <h2 class="text-3xl font-black text-white"><%= format_money(@total_budget) %></h2>
-      </div>
-      <div class="text-right">
-        <p class="text-2xs uppercase font-black text-indigo-900 tracking-widest mb-1">Spent</p>
-        <p class="text-lg font-bold text-indigo-100"><%= format_money(@total_spent) %></p>
-      </div>
-    </div>
-    
-    <%# Progress Bar - Minimalist Style %>
-    <div class="w-full bg-slate-900/20 border-2 border-slate-900 h-5 rounded-xl overflow-hidden">
-      <% overall_percent = @total_budget > 0 ? ((@total_spent.to_f / @total_budget) * 100).to_i : 0 %>
-      <div class="bg-orange-300 h-full border-r-2 border-slate-900 transition-all duration-1000" 
-          style="width: <%= [overall_percent, 100].min %>%"></div>
-    </div>
+<div class="pb-24 space-y-6" data-controller="tabs">
+  <%# 1. Tab Switcher - Neo-Brutalist Style %>
+  <div class="flex gap-2 p-1 bg-slate-900/5 border-2 border-slate-900 rounded-2xl">
+    <button class="flex-1 py-3 rounded-xl font-black uppercase text-xs tracking-widest transition-all border-2 border-slate-900 bg-white text-slate-900" 
+            data-action="click->tabs#switch" data-tabs-target="tab" data-type="expense">
+      Expenses
+    </button>
+    <button class="flex-1 py-3 rounded-xl font-black uppercase text-xs tracking-widest transition-all border-2 border-transparent text-slate-400" 
+            data-action="click->tabs#switch" data-tabs-target="tab" data-type="income">
+      Incomes
+    </button>
+  </div>
 
-    <%# Bagian Info Sisa Budget di bawah Progress Bar %>
-    <div class="flex justify-between items-start mt-2">
-      <p class="text-2xs font-black text-indigo-900 uppercase">
-        <%= overall_percent %>% Used
-      </p>
-      
-      <% remaining_budget = @total_budget - @total_spent %>
-      <div class="text-right">
-        <p class="text-2xs font-black uppercase <%= remaining_budget < 0 ? 'text-red-600' : 'text-indigo-900' %>">
-          <% if remaining_budget < 0 %>
-            Over Budget: <%= format_money(remaining_budget.abs) %>
-          <% else %>
-            <%= format_money(remaining_budget) %> Remaining
-          <% end %>
-        </p>
+  <%# --- SECTION EXPENSE (Menggunakan Kode Anda) --- %>
+  <div data-tabs-target="panel" data-type="expense">
+    <div class="pb-8">
+      <%# Main Summary Card Expense %>
+      <div class="animate-fade-up bg-indigo-400 border-2 border-slate-900 p-6 rounded-2xl mb-8 text-white">
+        <div class="flex justify-between items-end mb-6">
+          <div>
+            <p class="text-2xs uppercase font-black text-indigo-900 tracking-widest mb-1">Total Budget</p>
+            <h2 class="text-3xl font-black text-white"><%= format_money(@total_budget) %></h2>
+          </div>
+          <div class="text-right">
+            <p class="text-2xs uppercase font-black text-indigo-900 tracking-widest mb-1">Spent</p>
+            <p class="text-lg font-bold text-indigo-100"><%= format_money(@total_spent) %></p>
+          </div>
+        </div>
+        
+        <div class="w-full bg-slate-900/20 border-2 border-slate-900 h-5 rounded-xl overflow-hidden">
+          <% overall_percent = @total_budget > 0 ? ((@total_spent.to_f / @total_budget) * 100).to_i : 0 %>
+          <div class="bg-orange-300 h-full border-r-2 border-slate-900 transition-all duration-1000" 
+              style="width: <%= [overall_percent, 100].min %>%"></div>
+        </div>
+
+        <div class="flex justify-between items-start mt-2">
+          <p class="text-2xs font-black text-indigo-900 uppercase"><%= overall_percent %>% Used</p>
+          <% remaining_budget = @total_budget - @total_spent %>
+          <div class="text-right">
+            <p class="text-2xs font-black uppercase <%= remaining_budget < 0 ? 'text-red-600' : 'text-indigo-900' %>">
+              <% if remaining_budget < 0 %>
+                Over Budget: <%= format_money(remaining_budget.abs) %>
+              <% else %>
+                <%= format_money(remaining_budget) %> Remaining
+              <% end %>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <%= link_to new_category_path, class: "w-full h-14 bg-indigo-400 border-2 border-slate-900 rounded-2xl flex items-center justify-center gap-3 font-bold uppercase tracking-widest text-white active:scale-95 transition-all mb-8" do %>
+        Add Category
+      <% end %>
+
+      <%# Categories List Expense %>
+      <div class="space-y-4">
+        <div class="flex items-center justify-between px-1">
+          <h3 class="font-black text-slate-900 uppercase text-xs tracking-widest">Expense Categories</h3>
+          <span class="text-xs font-bold text-slate-500"><%= @expense_categories.count %> Items</span>
+        </div>
+
+        <% @expense_categories.each do |category| %>
+          <% 
+            budget = category.current_budget
+            spent = @category_spent_map[category.id] || 0 
+            percent = (budget && budget.amount > 0) ? ((spent.to_f / budget.amount) * 100).to_i : 0
+          %>
+          <div class="animate-fade-up group bg-white border-2 border-slate-900 rounded-2xl overflow-hidden transition-all active:scale-[0.98]">
+            <%= link_to category_path(category), class: "block p-4" do %>
+              <div class="flex items-center gap-4 mb-4">
+                <div class="w-14 h-14 rounded-xl border-2 border-slate-900 flex items-center justify-center text-3xl" 
+                    style="background-color: <%= category.color %>;">
+                  <%= category.icon %>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex justify-between items-start">
+                    <h4 class="font-black text-slate-900 text-base truncate pr-2"><%= category.name %></h4>
+                    <p class="text-base font-black text-indigo-400"><%= format_money(budget&.amount || 0) %></p>
+                  </div>
+                  <div class="flex justify-between items-center mt-1">
+                    <span class="text-2xs font-black text-slate-400 uppercase">Expense</span>
+                    <span class="text-2xs font-bold text-orange-400"><%= format_money(budget ? (budget.amount - spent) : 0) %> left</span>
+                  </div>
+                </div>
+              </div>
+              <% if budget %>
+                <div class="relative w-full bg-slate-100 border-2 border-slate-900 h-3 rounded-lg overflow-hidden">
+                  <div class="absolute top-0 left-0 h-full transition-all duration-700 ease-out" 
+                      style="width: <%= [percent, 100].min %>%; background-color: <%= category.color %>; border-right-width: <%= percent > 0 ? '2px' : '0' %>; border-color: rgb(15 23 42);">
+                  </div>
+                </div>
+              <% else %>
+                <div class="text-2xs font-bold text-slate-400 italic">No budget set for this month</div>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>
 
-	<%= link_to new_category_path, class: "w-full h-14 bg-indigo-400 border-2 border-slate-900 rounded-2xl flex items-center justify-center gap-3 font-bold uppercase tracking-widest text-white active:scale-95 transition-all mb-8" do %>
-		Add Category
-	<% end %>
+  <%# --- SECTION INCOME --- %>
+  <div data-tabs-target="panel" data-type="income" class="hidden">
+    <div class="pb-8">
+      <%# Main Summary Card Income %>
+      <div class="animate-fade-up bg-lime-500 border-2 border-slate-900 p-6 rounded-2xl mb-8 text-white">
+        <p class="text-2xs uppercase font-black text-emerald-900 tracking-widest mb-1">Total Received</p>
+        <h2 class="text-3xl font-black text-white"><%= format_money(@total_income) %></h2>
+        <div class="mt-4 py-2 px-4 bg-emerald-900/20 border-2 border-emerald-900/30 rounded-xl inline-block">
+          <p class="text-2xs font-black uppercase italic">Great job! Keep it growing.</p>
+        </div>
+      </div>
 
-  <%# 2. Categories List %>
-  <div class="space-y-4">
-    <div class="flex items-center justify-between px-1">
-      <h3 class="font-black text-slate-900 uppercase text-xs tracking-widest">Categories</h3>
-      <span class="text-xs font-bold text-slate-500"><%= @categories.count %> Items</span>
-    </div>
+      <%# Categories List Income %>
+      <div class="space-y-4">
+        <div class="flex items-center justify-between px-1">
+          <h3 class="font-black text-slate-900 uppercase text-xs tracking-widest">Income Sources</h3>
+          <span class="text-xs font-bold text-slate-500"><%= @income_categories.count %> Items</span>
+        </div>
 
-    <% @categories.each do |category| %>
-      <% 
-        budget = category.current_budget
-        spent = @category_spent_map[category.id] || 0 
-        percent = (budget && budget.amount > 0) ? ((spent.to_f / budget.amount) * 100).to_i : 0
-      %>
-      
-      <div class="animate-fade-up group bg-white border-2 border-slate-900 rounded-2xl overflow-hidden transition-all active:scale-[0.98]">
-        <%# Bagian Atas: Bisa diklik untuk masuk ke Show %>
-        <%= link_to category_path(category), class: "block p-4" do %>
-          <div class="flex items-center gap-4 mb-4">
-            <div class="w-14 h-14 rounded-xl border-2 border-slate-900 flex items-center justify-center text-3xl" 
-                 style="background-color: <%= category.color %>;">
-              <%= category.icon %>
-            </div>
-            
-            <div class="flex-1 min-w-0">
-              <div class="flex justify-between items-start">
-                <h4 class="font-black text-slate-900 text-base truncate pr-2"><%= category.name %></h4>
-                <p class="text-base font-black text-indigo-400"><%= format_money(budget&.amount || 0) %></p>
+        <% @income_categories.each do |category| %>
+          <% earned = @category_income_map[category.id] || 0 %>
+          <div class="animate-fade-up group bg-white border-2 border-slate-900 rounded-2xl overflow-hidden transition-all active:scale-[0.98]">
+            <%= link_to category_path(category), class: "block p-4" do %>
+              <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-xl border-2 border-slate-900 flex items-center justify-center text-3xl" 
+                    style="background-color: <%= category.color %>;">
+                  <%= category.icon %>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex justify-between items-center">
+                    <h4 class="font-black text-slate-900 text-base truncate"><%= category.name %></h4>
+                    <p class="text-base font-black text-emerald-500">+<%= format_money(earned) %></p>
+                  </div>
+                  <p class="text-2xs font-black text-slate-400 uppercase mt-1">Income Category</p>
+                </div>
               </div>
-              <div class="flex justify-between items-center mt-1">
-                <span class="text-2xs font-black text-slate-400 uppercase"><%= category.category_type %></span>
-                <span class="text-2xs font-bold text-orange-400"><%= format_money(budget ? (budget.amount - spent) : 0) %> left</span>
-              </div>
-            </div>
+            <% end %>
           </div>
-
-          <% if budget %>
-            <div class="relative w-full bg-slate-100 border-2 border-slate-900 h-3 rounded-lg overflow-hidden">
-              <div class="absolute top-0 left-0 h-full transition-all duration-700 ease-out" 
-                   style="width: <%= [percent, 100].min %>%; background-color: <%= category.color %>; border-right-width: <%= percent > 0 ? '2px' : '0' %>; border-color: rgb(15 23 42);">
-              </div>
-            </div>
-          <% else %>
-            <div class="text-2xs font-bold text-slate-400 italic">No budget set for this month</div>
-          <% end %>
         <% end %>
       </div>
-    <% end %>
+    </div>
   </div>
 </div>

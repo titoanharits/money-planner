@@ -4,6 +4,9 @@
 
 import { application } from "./application"
 
+import CurrencyController from "./currency_controller"
+application.register("currency", CurrencyController)
+
 import DatepickerController from "./datepicker_controller"
 application.register("datepicker", DatepickerController)
 
@@ -18,3 +21,6 @@ application.register("picker", PickerController)
 
 import ScrollHeaderController from "./scroll_header_controller"
 application.register("scroll-header", ScrollHeaderController)
+
+import TabsController from "./tabs_controller"
+application.register("tabs", TabsController)

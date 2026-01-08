@@ -24,14 +24,15 @@
   </head>
 
   <body class="bg-indigo-100 text-slate-900 antialiased pb-28">
-    <%= render 'layouts/flash' %>
-
-    <%= render 'layouts/header' if user_signed_in? %>
-
+    <% unless controller_name == 'onboarding' %>
+      <%= render 'layouts/flash' %>
+      <%= render 'layouts/header' if user_signed_in? %>
+    <% end %>
     <main class="max-w-md mx-auto px-4">
       <%= yield %>
     </main>
-
-    <%= render 'layouts/bottom_nav' %>
+    <% unless controller_name == 'onboarding' %>
+      <%= render 'layouts/bottom_nav' %>
+    <% end %>
   </body>
 </html>

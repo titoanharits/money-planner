@@ -1,6 +1,6 @@
 <div class="space-y-6 pb-24">
   <%# 1. Main Net Balance Card - Kuning (Tanpa Shadow) %>
-  <div class="animate-fade-up bg-cyan-400 border-2 border-slate-900 p-6 rounded-3xl">
+  <div class="animate-fade-up bg-indigo-400 border-2 border-slate-900 p-6 rounded-3xl">
     <div class="flex items-center gap-2 mb-1">
       <span class="text-xl">💰</span>
       <p class="text-2xs font-black text-slate-900 uppercase tracking-widest">Available Balance</p>
@@ -11,20 +11,20 @@
   <%# 2. Income & Expense Split Cards (Tanpa Shadow) %>
   <div class="animate-fade-up grid grid-cols-2 gap-4" style="animation-delay: 100ms">
     <%# Income Card - Hijau Emerald %>
-    <div class="bg-emerald-300 border-2 border-slate-900 p-4 rounded-3xl">
+    <div class="bg-lime-400 border-2 border-slate-900 p-4 rounded-3xl">
       <div class="w-8 h-8 bg-white border-2 border-slate-900 rounded-lg flex items-center justify-center mb-3">
-        <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M7 11l5-5m0 0l5 5m-5-5v12" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        <i data-lucide="arrow-up" class="w-5 h-5 text-lime-600" stroke-width="3"></i>
       </div>
-      <p class="text-[9px] font-black text-emerald-900 uppercase tracking-widest">Income</p>
+      <p class="text-[9px] font-black text-slate-900 uppercase tracking-widest">Income</p>
       <p class="text-sm font-black text-slate-900 truncate">+<%= format_money(@total_income) %></p>
     </div>
 
     <%# Expense Card - Rose/Coral %>
-    <div class="bg-rose-300 border-2 border-slate-900 p-4 rounded-3xl">
+    <div class="bg-rose-400 border-2 border-slate-900 p-4 rounded-3xl">
       <div class="w-8 h-8 bg-white border-2 border-slate-900 rounded-lg flex items-center justify-center mb-3">
-        <svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M17 13l-5 5m0 0l-5-5m5 5V6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        <i data-lucide="arrow-down" class="w-5 h-5 text-rose-600" stroke-width="3"></i>
       </div>
-      <p class="text-[9px] font-black text-rose-900 uppercase tracking-widest">Expense</p>
+      <p class="text-[9px] font-black text-slate-900 uppercase tracking-widest">Expense</p>
       <p class="text-sm font-black text-slate-900 truncate">-<%= format_money(@total_expense) %></p>
     </div>
   </div>
