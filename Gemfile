@@ -76,3 +76,4 @@ group :test do
 end
 
 gem "devise"
+gem "stringio", "3.1.2"
