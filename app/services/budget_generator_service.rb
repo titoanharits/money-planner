@@ -21,7 +21,7 @@ class BudgetGeneratorService
         category = @user.categories.find_or_create_by!(name: rule[:name]) do |c|
           c.icon = rule[:icon]
           c.color = rule[:color]
-          c.category_type = 0 # Expense
+          c.category_type = :expense
         end
 
         # 3. Create atau update budget bulan ini
@@ -31,6 +31,38 @@ class BudgetGeneratorService
           year: @year
         )
         budget.update!(amount: amount)
+      end
+
+      # Default Income Categories
+      [
+        { name: "Gaji", icon: "💼", color: "#4ADE80" },
+        { name: "Profit", icon: "📈", color: "#34D399" }
+      ].each do |cat|
+        @user.categories.find_or_create_by!(name: cat[:name]) do |c|
+          c.icon = cat[:icon]
+          c.color = cat[:color]
+          c.category_type = :income
+          c.system_default = false
+        end
+      end
+
+      # System Transfer Categories (locked)
+      [
+        { name: "Transfer Bank", icon: "🏦", color: "#60A5FA" },
+        { name: "Tarik Tunai", icon: "💵", color: "#FBBF24" }
+      ].each do |cat|
+        @user.categories.find_or_create_by!(name: cat[:name]) do |c|
+          c.icon = cat[:icon]
+          c.color = cat[:color]
+          c.category_type = :transfer
+          c.system_default = true
+        end
+      end
+
+      # Default Pocket
+      @user.pockets.find_or_create_by!(name: "Cash") do |p|
+        p.icon = "💰"
+        p.color = "#FBBF24"
       end
     end
     true

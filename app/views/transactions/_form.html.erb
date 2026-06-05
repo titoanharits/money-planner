@@ -1,70 +1,136 @@
 <%# app/views/transactions/_form.html.erb %>
-<%= form_with(model: transaction, class: "space-y-6") do |f| %>
-  
-  <%# Amount Input (Besar) %>
-  <div class="bg-indigo-400 border-2 border-slate-900 p-6 rounded-3xl mb-8 text-white" data-controller="currency">
-    <%= f.label :amount, "How much?", class: "block text-[10px] font-black uppercase tracking-widest mb-2 opacity-80" %>
+<div data-controller="transaction-type">
+  <%= form_with(model: transaction, class: "space-y-6") do |f| %>
     
-    <div class="flex items-center">
-      <span class="text-2xl font-black mr-2"><%= current_user.currency %></span>
+    <%# 1. Tab Switcher - Neo-Brutalist Style %>
+    <div class="flex gap-2 p-1 bg-slate-900/5 border-2 border-slate-900 rounded-2xl mb-6">
+      <button type="button" 
+              class="flex-1 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all border-2 border-slate-900 bg-white text-slate-900" 
+              data-action="click->transaction-type#switch" data-transaction-type-target="tab" data-type="expense">
+        Pengeluaran
+      </button>
+      <button type="button" 
+              class="flex-1 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all border-2 border-transparent text-slate-400" 
+              data-action="click->transaction-type#switch" data-transaction-type-target="tab" data-type="income">
+        Pendapatan
+      </button>
+      <button type="button" 
+              class="flex-1 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all border-2 border-transparent text-slate-400" 
+              data-action="click->transaction-type#switch" data-transaction-type-target="tab" data-type="transfer">
+        Transfer
+      </button>
+    </div>
+
+    <%= f.hidden_field :transaction_type, value: transaction.transaction_type || "expense", data: { transaction_type_target: "typeInput" } %>
+
+    <%# Amount Input (Besar) %>
+    <div class="bg-indigo-400 border-2 border-slate-900 p-6 rounded-3xl mb-8 text-white transition-colors" data-controller="currency" data-transaction-type-target="amountCard">
+      <%= f.label :amount, "How much?", class: "block text-[10px] font-black uppercase tracking-widest mb-2 opacity-80" %>
       
-      <%# Hidden field untuk menyimpan data asli (angka murni) %>
-      <%= f.hidden_field :amount, data: { currency_target: "hidden" } %>
+      <div class="flex items-center">
+        <span class="text-2xl font-black mr-2"><%= current_user.currency %></span>
+        
+        <%# Hidden field untuk menyimpan data asli (angka murni) %>
+        <%= f.hidden_field :amount, data: { currency_target: "hidden" } %>
 
-      <%# Text field untuk tampilan yang otomatis terformat %>
-      <input type="text" 
-            placeholder="0"
-            data-currency-target="display"
-            data-action="input->currency#handleInput"
-            class="bg-transparent text-4xl font-black placeholder:text-white/40 border-none focus:ring-0 w-full p-0 outline-none" />
+        <%# Text field untuk tampilan yang otomatis terformat %>
+        <input type="text" 
+              placeholder="0"
+              data-currency-target="display"
+              data-action="input->currency#handleInput"
+              class="bg-transparent text-4xl font-black placeholder:text-white/40 border-none focus:ring-0 w-full p-0 outline-none" />
+      </div>
     </div>
-  </div>
 
-  <%# Description %>
-  <div class="space-y-2">
-    <%= f.label :description, "What's this for?", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
-    <%= f.text_field :description, placeholder: "e.g. Starbucks Coffee", 
-        class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-4 px-6 text-slate-900 font-bold focus:bg-orange-50 transition-all outline-none" %>
-  </div>
+    <%# Pockets Selection %>
+    <div class="space-y-4">
+      <%# Source Pocket (For Expense & Transfer) %>
+      <div class="space-y-2" data-transaction-type-target="sourceField">
+        <%= f.label :source_pocket_id, "Dari Kantong", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+        <div class="relative">
+          <%= f.collection_select :source_pocket_id, @pockets, :id, :name, 
+              { prompt: "Pilih Kantong Sumber..." }, 
+              { class: "w-full",
+                data: { controller: "tom-select", transaction_type_target: "sourceSelect" } } %>
+        </div>
+      </div>
 
-  <%# Category Dropdown %>
-  <div class="space-y-2">
-    <%= f.label :category_id, "Category", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
-    <div class="relative">
-      <%# Mengelompokkan kategori berdasarkan Tipenya %>
-      <%= f.grouped_collection_select :category_id, 
-          [Struct.new(:type, :categories).new('Expenses', current_user.categories.expense), 
-          Struct.new(:type, :categories).new('Incomes', current_user.categories.income)], 
-          :categories, :type, :id, :name, 
-          { prompt: "category..." }, 
-          { class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-4 px-6 text-slate-900 appearance-none font-bold outline-none" } %>
+      <%# Destination Pocket (For Income & Transfer) %>
+      <div class="space-y-2 hidden" data-transaction-type-target="destinationField">
+        <%= f.label :destination_pocket_id, "Ke Kantong", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+        <div class="relative">
+          <%= f.collection_select :destination_pocket_id, @pockets, :id, :name, 
+              { prompt: "Pilih Kantong Tujuan..." }, 
+              { class: "w-full",
+                data: { controller: "tom-select", transaction_type_target: "destinationSelect" } } %>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <div class="grid grid-cols-2 gap-4">
-    <%# Date Input %>
+    <%# Category Dropdown %>
     <div class="space-y-2">
-      <%= f.label :date, "Date", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
-      <%= f.text_field :date, 
-          value: f.object.date || Date.today.strftime("%d/%m/%Y"),
-          autocomplete: "off",
-          data: { controller: "datepicker", type: "date" },
-          class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-4 px-4 text-slate-900 font-bold outline-none cursor-pointer focus:bg-orange-50 transition-all" %>
+      <%= f.label :category_id, "Kategori", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+      <div class="relative">
+        <select name="transaction[category_id]" id="transaction_category_id" 
+                class="w-full"
+                data-controller="tom-select"
+                data-transaction-type-target="categorySelect"
+                data-action="change->transaction-type#handleCategoryChange">
+          <option value="">Pilih Kategori...</option>
+          
+          <optgroup label="Expenses" data-transaction-type-target="expenseOptgroup">
+            <% @expense_categories.each do |cat| %>
+              <option value="<%= cat.id %>" <%= 'selected' if transaction.category_id == cat.id %>><%= cat.name %></option>
+            <% end %>
+          </optgroup>
+          
+          <optgroup label="Incomes" data-transaction-type-target="incomeOptgroup" class="hidden" disabled>
+            <% @income_categories.each do |cat| %>
+              <option value="<%= cat.id %>" <%= 'selected' if transaction.category_id == cat.id %>><%= cat.name %></option>
+            <% end %>
+          </optgroup>
+
+          <optgroup label="Transfers" data-transaction-type-target="transferOptgroup" class="hidden" disabled>
+            <% @transfer_categories.each do |cat| %>
+              <option value="<%= cat.id %>" data-name="<%= cat.name %>" <%= 'selected' if transaction.category_id == cat.id %>><%= cat.name %></option>
+            <% end %>
+          </optgroup>
+        </select>
+      </div>
     </div>
 
-    <%# Time Input %>
+    <%# Description %>
+    <div class="space-y-2">
+      <%= f.label :description, "Catatan / Keterangan", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+      <%= f.text_field :description, placeholder: "e.g. Starbucks Coffee", 
+          class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-4 px-6 text-slate-900 font-bold focus:bg-orange-50 transition-all outline-none" %>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <%# Date Input %>
       <div class="space-y-2">
-        <%= f.label :time, "Time", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+        <%= f.label :date, "Tanggal", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+        <%= f.text_field :date, 
+            value: f.object.date || Date.today.strftime("%d/%m/%Y"),
+            autocomplete: "off",
+            data: { controller: "datepicker", type: "date" },
+            class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-4 px-4 text-slate-900 font-bold outline-none cursor-pointer focus:bg-orange-50 transition-all" %>
+      </div>
+
+      <%# Time Input %>
+      <div class="space-y-2">
+        <%= f.label :time, "Waktu", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
         <%= f.text_field :time, 
             value: f.object.time&.strftime("%H:%M") || Time.current.strftime("%H:%M"),
             autocomplete: "off",
             data: { controller: "datepicker", type: "time" },
             class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-4 px-4 text-slate-900 font-bold outline-none cursor-pointer focus:bg-orange-50 transition-all" %>
       </div>
-  </div>
+    </div>
 
-  <div class="pt-6">
-    <%= f.submit "Save Transaction", 
-        class: "w-full py-4 bg-orange-300 border-2 border-slate-900 text-slate-900 font-black uppercase tracking-widest rounded-2xl active:scale-95 transition-all cursor-pointer" %>
-  </div>
-<% end %>
+    <div class="pt-6">
+      <%= f.submit "Simpan Transaksi", 
+          class: "w-full py-4 bg-orange-300 border-2 border-slate-900 text-slate-900 font-black uppercase tracking-widest rounded-2xl active:scale-95 transition-all cursor-pointer" %>
+    </div>
+  <% end %>
+</div>

@@ -7,6 +7,7 @@ class User < ApplicationRecord
   has_many :categories, dependent: :destroy
   has_many :budgets, dependent: :destroy
   has_many :transactions, dependent: :destroy
+  has_many :pockets, dependent: :destroy
 
   SUPPORTED_CURRENCIES = [
     ["IDR - Rupiah Indonesia", "IDR"],
@@ -16,17 +17,46 @@ class User < ApplicationRecord
   ].freeze
 
   validates :currency, presence: true, inclusion: { in: SUPPORTED_CURRENCIES.map(&:last) }
+  
+  validates :billing_start_day, numericality: {
+    only_integer: true,
+    greater_than_or_equal_to: 1,
+    less_than_or_equal_to: 28
+  }, allow_nil: true
+
+  def billing_start_day
+    read_attribute(:billing_start_day) || 1
+  end
+
+  # Periode billing berdasarkan setting user
+  def current_billing_period(reference_date = Date.today)
+    start_day = billing_start_day
+    if reference_date.day >= start_day
+      period_start = reference_date.change(day: start_day)
+      period_end = (period_start >> 1) - 1.day
+    else
+      period_start = (reference_date << 1).change(day: start_day)
+      period_end = reference_date.change(day: start_day) - 1.day
+    end
+    period_start..period_end
+  end
 
   def monthly_income(date = Date.today)
-    transactions.by_month(date).incomes.total_amount
+    period = current_billing_period(date)
+    transactions.by_period(period).incomes.total_amount
   end
 
   def monthly_expense(date = Date.today)
-    transactions.by_month(date).expenses.total_amount
+    period = current_billing_period(date)
+    transactions.by_period(period).expenses.total_amount
   end
 
   def monthly_net_balance(date = Date.today)
     monthly_income(date) - monthly_expense(date)
+  end
+
+  def total_pocket_balance
+    pockets.sum { |p| p.current_balance }
   end
 
   def total_monthly_budget(date = Date.today)
@@ -34,7 +64,8 @@ class User < ApplicationRecord
   end
 
   def expenses_by_category_map(date = Date.today)
-    transactions.by_month(date)
+    period = current_billing_period(date)
+    transactions.by_period(period)
                 .expenses
                 .group(:category_id)
                 .sum(:amount)
@@ -60,6 +91,6 @@ class User < ApplicationRecord
   end
 
   def needs_onboarding?
-    categories.empty? && budgets.empty?
+    categories.empty? && pockets.empty?
   end
 end

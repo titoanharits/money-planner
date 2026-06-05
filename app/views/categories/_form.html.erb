@@ -47,14 +47,14 @@
 
     <%# 4. Category Type Select %>
     <div class="space-y-2">
-      <%= f.label :category_type, "Transaction Type", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+      <%= f.label :category_type, "Tipe Transaksi", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
       <div class="relative">
         <%= f.select :category_type, 
-            Category.category_types.keys.map { |k| [k.humanize, k] }, 
+            Category.category_types.keys.reject { |k| k == "transfer" }.map { |k| [k.humanize, k] }, 
             {}, 
             { 
-              class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-4 px-6 text-slate-900 appearance-none outline-none font-bold focus:bg-orange-50 transition-all",
-              data: { action: "change->picker#toggleBudget" } 
+              class: "w-full",
+              data: { controller: "tom-select", action: "change->picker#toggleBudget" } 
             } %>
       </div>
     </div>

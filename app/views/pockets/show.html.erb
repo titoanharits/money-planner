@@ -1,0 +1,74 @@
+<%# app/views/pockets/show.html.erb %>
+<div class="pb-24 space-y-8">
+  <%# Detail Card %>
+  <div class="animate-fade-up bg-white border-2 border-slate-900 p-6 rounded-3xl" style="background-color: <%= @pocket.color %>;">
+    <div class="flex justify-between items-start mb-6">
+      <div class="w-16 h-16 rounded-2xl bg-white/50 border-2 border-slate-900 flex items-center justify-center text-4xl">
+        <%= @pocket.icon %>
+      </div>
+      <div class="flex gap-2">
+        <%= link_to edit_pocket_path(@pocket), class: "w-10 h-10 bg-white/50 border-2 border-slate-900 rounded-xl flex items-center justify-center active:scale-95 transition-all" do %>
+          <i data-lucide="pencil" class="w-5 h-5 text-slate-900"></i>
+        <% end %>
+        <%= link_to pocket_path(@pocket), data: { turbo_method: :delete, turbo_confirm: "Yakin hapus kantong ini?" }, class: "w-10 h-10 bg-rose-400 border-2 border-slate-900 rounded-xl flex items-center justify-center active:scale-95 transition-all" do %>
+          <i data-lucide="trash" class="w-5 h-5 text-white"></i>
+        <% end %>
+      </div>
+    </div>
+    
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-1"><%= @pocket.name %></h2>
+      <p class="text-[10px] font-black uppercase tracking-widest text-slate-900/60 mb-2">Saldo Kantong</p>
+      <p class="text-4xl font-black text-slate-900"><%= format_money(@pocket.current_balance) %></p>
+    </div>
+  </div>
+
+  <%# History %>
+  <div class="animate-fade-up space-y-4" style="animation-delay: 100ms">
+    <div class="flex justify-between items-center px-1">
+      <h3 class="font-black text-xs uppercase tracking-widest text-slate-900">Riwayat Kantong</h3>
+    </div>
+
+    <div class="space-y-3">
+      <% @transactions.each do |t| %>
+        <div class="flex items-center justify-between bg-white border-2 border-slate-900 p-3 rounded-2xl transition-transform active:scale-[0.98]">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-xl border-2 border-slate-900 flex items-center justify-center text-2xl" style="background-color: <%= t.category.color %>;">
+              <%= t.category.icon %>
+            </div>
+            <div>
+              <p class="font-black text-sm text-slate-900 uppercase"><%= t.description.presence || t.category.name %></p>
+              <div class="flex items-center gap-1 mt-0.5">
+                <% if t.transfer? %>
+                  <p class="text-[10px] font-bold text-slate-400 uppercase">
+                    <%= t.source_pocket&.name || '?' %> <i data-lucide="arrow-right" class="w-3 h-3 inline"></i> <%= t.destination_pocket&.name || '?' %>
+                  </p>
+                <% end %>
+                <p class="text-[10px] font-bold text-slate-400 uppercase"><%= t.date.strftime("%d %b") %> <%= t.time&.strftime("%H:%M") %></p>
+              </div>
+            </div>
+          </div>
+          <div class="text-right">
+            <% if t.transfer? %>
+              <% if t.source_pocket_id == @pocket.id %>
+                <p class="font-black text-sm text-rose-500">-<%= format_money(t.amount) %></p>
+              <% else %>
+                <p class="font-black text-sm text-emerald-500">+<%= format_money(t.amount) %></p>
+              <% end %>
+            <% elsif t.expense? %>
+              <p class="font-black text-sm text-rose-500">-<%= format_money(t.amount) %></p>
+            <% else %>
+              <p class="font-black text-sm text-emerald-500">+<%= format_money(t.amount) %></p>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <% if @transactions.empty? %>
+        <div class="py-8 text-center border-2 border-dashed border-slate-300 rounded-3xl">
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Belum ada riwayat</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

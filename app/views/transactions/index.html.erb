@@ -29,15 +29,33 @@
 
               <div class="flex-1 min-w-0">
                 <p class="font-black text-sm text-slate-900 uppercase"><%= transaction.description.presence || transaction.category.name %></p>
-                <p class="text-xs font-bold text-slate-400 uppercase"><%= transaction.category.name %></p>
-                <p class="text-xs font-bold text-slate-400 uppercase"><%= transaction.time&.strftime("%H:%M") %></p>
+                
+                <div class="flex items-center gap-1 mt-0.5">
+                  <% if transaction.transfer? %>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase">
+                      <%= transaction.source_pocket&.name || '?' %> <i data-lucide="arrow-right" class="w-3 h-3 inline"></i> <%= transaction.destination_pocket&.name || '?' %>
+                    </p>
+                  <% else %>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase">
+                      <%= transaction.source_pocket&.name || transaction.destination_pocket&.name || 'Unknown' %>
+                    </p>
+                  <% end %>
+                  <span class="text-slate-300 mx-1">•</span>
+                  <p class="text-[10px] font-bold text-slate-400 uppercase"><%= transaction.category.name %> - <%= transaction.time&.strftime("%H:%M") %></p>
+                </div>
               </div>
 
               <div class="text-right shrink-0">
-                <p class="font-black text-sm <%= transaction.category.category_type == 'expense' ? 'text-orange-400' : 'text-indigo-400' %>">
-                  <%= transaction.category.category_type == 'expense' ? '-' : '+' %>
-                  <%= format_money(transaction.amount) %>
-                </p>
+                <% if transaction.transfer? %>
+                  <p class="font-black text-sm text-slate-500">
+                    ↔ <%= format_money(transaction.amount) %>
+                  </p>
+                <% else %>
+                  <p class="font-black text-sm <%= transaction.category.category_type == 'expense' ? 'text-orange-400' : 'text-indigo-400' %>">
+                    <%= transaction.category.category_type == 'expense' ? '-' : '+' %>
+                    <%= format_money(transaction.amount) %>
+                  </p>
+                <% end %>
               </div>
             </button>
 

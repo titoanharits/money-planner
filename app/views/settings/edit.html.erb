@@ -1,0 +1,29 @@
+<%# app/views/settings/edit.html.erb %>
+<div class="pb-24 space-y-8">
+  <div class="animate-fade-up bg-white border-2 border-slate-900 p-6 rounded-3xl">
+    <h2 class="text-2xl font-black text-slate-900 mb-6">Pengaturan</h2>
+
+    <%= form_with(model: @user, url: settings_path, method: :patch, class: "space-y-6") do |f| %>
+      <%# Billing Start Day %>
+      <div class="space-y-2">
+        <%= f.label :billing_start_day, "Tanggal Awal Bulan (Billing Cycle)", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+        <p class="text-[10px] text-slate-500 font-bold ml-1 mb-2">Pilih tanggal untuk reset perhitungan budget dan laporan bulanan.</p>
+        
+        <div class="relative">
+          <%= f.select :billing_start_day, 
+              (1..31).to_a.map { |d| ["Tanggal #{d}", d] }, 
+              {}, 
+              { class: "w-full", data: { controller: "tom-select" } } %>
+          <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+            <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-4">
+        <%= f.submit "Simpan Pengaturan", 
+            class: "w-full py-4 bg-indigo-400 border-2 border-slate-900 text-white font-black uppercase tracking-widest rounded-2xl active:scale-95 transition-all cursor-pointer" %>
+      </div>
+    <% end %>
+  </div>
+</div>

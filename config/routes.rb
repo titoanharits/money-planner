@@ -1,13 +1,20 @@
 Rails.application.routes.draw do
-  resources :transactions
-  get "dashboard/index"
-  devise_for :users
+  devise_for :users, controllers: {
+    registrations: 'users/registrations'
+  }
+
+  # Authenticated Routes
   authenticated :user do
-    root to: "dashboard#index", as: :authenticated_root
+    root "dashboard#index", as: :authenticated_root
+    
+    resource :settings, only: [:edit, :update]
+    resources :pockets
+    resources :transactions
+    resources :categories
   end
 
-  resources :categories
-  resources :transactions
+  get "dashboard/index"
+
   scope :onboarding do
     get  'start',    to: 'onboarding#start',    as: :onboarding_start
     post 'generate', to: 'onboarding#generate', as: :onboarding_generate

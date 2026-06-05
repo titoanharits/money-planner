@@ -1,0 +1,54 @@
+<%# app/views/pockets/_form.html.erb %>
+<div data-controller="picker" class="space-y-8">
+  <%= form_with(model: pocket, class: "space-y-6") do |f| %>
+    
+    <%# 1. Icon Picker %>
+    <div class="flex flex-col items-center gap-4 mb-10">
+      <div class="relative">
+        <button type="button" data-action="click->picker#toggleEmojiPicker" 
+                class="w-24 h-24 bg-orange-100 border-2 border-slate-900 rounded-2xl flex items-center justify-center text-5xl active:scale-90 transition-all">
+          <span data-picker-target="iconPreview"><%= pocket.icon.presence || "💳" %></span>
+        </button>
+        <div class="absolute -bottom-2 -right-2 bg-indigo-400 text-white p-2 rounded-xl border-2 border-slate-900">
+          <i data-lucide="pencil" class="w-4 h-4"></i>
+        </div>
+        
+        <div data-picker-target="emojiPickerContainer" class="hidden absolute top-28 left-1/2 -translate-x-1/2 z-50 rounded-2xl overflow-hidden border-2 border-slate-900 bg-white">
+          <emoji-picker data-action="emoji-click->picker#selectEmoji" class="light"></emoji-picker>
+        </div>
+      </div>
+      <%= f.hidden_field :icon, data: { picker_target: "iconInput" }, value: pocket.icon.presence || "💳" %>
+    </div>
+
+    <%# 2. Pocket Name %>
+    <div class="space-y-2">
+      <%= f.label :name, "Nama Kantong", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+      <%= f.text_field :name, placeholder: "e.g. Bank BCA", 
+          class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-4 px-6 text-slate-900 placeholder:text-slate-300 focus:bg-orange-50 outline-none transition-all font-bold" %>
+    </div>
+
+    <%# 3. Color Selection %>
+    <div class="space-y-4">
+      <%= f.label :color, "Warna Identitas", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+      <%= f.hidden_field :color, data: { picker_target: "colorInput" }, value: pocket.color.presence || "#93C5FD" %>
+      
+      <div class="grid grid-cols-5 gap-3 justify-items-center bg-slate-50 border-2 border-slate-900 p-4 rounded-2xl">
+        <% ['#FDE68A', '#A7F3D0', '#DDD6FE', '#FBCFE8', '#FFD1B3', '#93C5FD', '#FCA5A5', '#C4B5FD', '#D1D5DB', '#34D399'].each do |color_hex| %>
+          <button type="button" 
+                  data-action="click->picker#selectColor" 
+                  data-color="<%= color_hex %>"
+                  class="color-option w-10 h-10 rounded-xl border-2 border-slate-900 transition-all hover:scale-110 active:scale-90 <%= 'ring-4 ring-slate-900 scale-110' if pocket.color == color_hex %>"
+                  style="background-color: <%= color_hex %>;">
+          </button>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="pt-6 space-y-4">
+      <%= f.submit pocket.new_record? ? "Buat Kantong" : "Simpan Perubahan", 
+          class: "w-full py-4 bg-indigo-400 border-2 border-slate-900 text-white font-black uppercase tracking-widest rounded-2xl active:scale-95 transition-all cursor-pointer" %>
+      
+      <%= link_to "Batal", pockets_path, class: "block text-center text-xs font-black uppercase tracking-widest text-slate-400 hover:text-red-500 transition-colors" %>
+    </div>
+  <% end %>
+</div>

@@ -24,3 +24,12 @@ application.register("scroll-header", ScrollHeaderController)
 
 import TabsController from "./tabs_controller"
 application.register("tabs", TabsController)
+
+import DropdownController from "./dropdown_controller"
+application.register("dropdown", DropdownController)
+
+import TransactionTypeController from "./transaction_type_controller"
+application.register("transaction-type", TransactionTypeController)
+
+import TomSelectController from "./tom_select_controller"
+application.register("tom-select", TomSelectController)

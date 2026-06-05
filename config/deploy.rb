@@ -48,3 +48,18 @@ set :rvm_ruby_version, "3.4.7"
 set :nvm_type, :user # or :system, depends on your nvm setup
 set :nvm_node, "v22.9.0"
 set :nvm_map_bins, %w[node npm yarn rake]
+
+namespace :deploy do
+  desc "Run rake db:seed"
+  task :seed do
+    on primary :db do
+      within current_path do
+        with rails_env: fetch(:rails_env) do
+          execute :rake, "db:seed"
+        end
+      end
+    end
+  end
+
+  after 'deploy:migrate', 'deploy:seed'
+end

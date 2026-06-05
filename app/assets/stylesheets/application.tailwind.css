@@ -2,6 +2,7 @@
 @import "tailwindcss";
 @import "flowbite/src/themes/default";
 @import "air-datepicker/air-datepicker.css";
+@import "tom-select/dist/css/tom-select.css";
 @import "./custom_datepicker.css";
 @plugin "flowbite/plugin";
 @source "../../../node_modules/flowbite";
@@ -74,4 +75,71 @@ input::-webkit-inner-spin-button {
 /* Menghilangkan spinner di Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+/* Tom Select Neo-Brutalism Override */
+.ts-wrapper {
+  position: relative;
+}
+
+.ts-control {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background-color: #f8fafc;
+  border: 2px solid #0f172a;
+  border-radius: 1rem;
+  padding: 1rem 1.5rem;
+  color: #0f172a;
+  font-weight: 800;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.ts-wrapper.focus .ts-control,
+.ts-wrapper:hover .ts-control {
+  background-color: #fff7ed;
+  box-shadow: 4px 4px 0 0 rgba(0,0,0,1);
+  transform: translate(-4px, -4px);
+}
+
+.ts-wrapper.disabled .ts-control {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f1f5f9;
+  box-shadow: none;
+  transform: none;
+}
+
+.ts-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.5rem;
+  background-color: #ffffff;
+  border: 2px solid #0f172a;
+  border-radius: 1rem;
+  box-shadow: 4px 4px 0 0 rgba(0,0,0,1);
+  z-index: 50;
+  overflow: hidden;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.ts-dropdown .ts-dropdown-content {
+  max-height: 15rem;
+  overflow-y: auto;
+}
+
+.ts-dropdown .option {
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.ts-dropdown .option:hover,
+.ts-dropdown .option.active {
+  background-color: #fff7ed;
 }
