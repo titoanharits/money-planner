@@ -1,6 +1,6 @@
 class PocketsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_pocket, only: [:show, :edit, :update, :destroy]
+  before_action :set_pocket, only: [:show, :edit, :update, :destroy, :adjust_balance]
   before_action :set_page_title
 
   def index
@@ -10,6 +10,7 @@ class PocketsController < ApplicationController
   def show
     @transactions = Transaction.where("source_pocket_id = ? OR destination_pocket_id = ?", @pocket.id, @pocket.id)
                                .recent.limit(20).includes(:category)
+    @adjustments = @pocket.balance_adjustments.recent.limit(10)
   end
 
   def new
@@ -33,6 +34,20 @@ class PocketsController < ApplicationController
       redirect_to pockets_path, notice: "Kantong berhasil diperbarui."
     else
       render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def adjust_balance
+    if params[:zero_balance] == "1"
+      target = 0
+    else
+      target = params[:target_balance].to_d
+    end
+
+    if @pocket.adjust_balance!(target, current_user, note: params[:note])
+      redirect_to pocket_path(@pocket), notice: "Saldo berhasil disesuaikan."
+    else
+      redirect_to pocket_path(@pocket), alert: "Gagal menyesuaikan saldo."
     end
   end
 

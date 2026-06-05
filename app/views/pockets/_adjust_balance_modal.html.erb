@@ -1,0 +1,53 @@
+<%# app/views/pockets/_adjust_balance_modal.html.erb %>
+<div data-adjust-balance-target="modal" 
+     data-action="click->adjust-balance#closeOnBackdrop"
+     class="hidden fixed inset-0 z-50 bg-slate-900/40 items-end sm:items-center justify-center p-4">
+  
+  <div class="bg-white w-full max-w-md border-2 border-slate-900 rounded-3xl p-6 animate-fade-up">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="font-black text-lg text-slate-900">Sesuaikan Saldo</h3>
+      <button type="button" data-action="click->adjust-balance#toggleModal" class="w-8 h-8 flex items-center justify-center border-2 border-slate-900 rounded-xl hover:bg-slate-100 active:scale-95 transition-all">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <div class="mb-6 p-4 bg-slate-50 border-2 border-slate-900 rounded-2xl">
+      <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Saldo Saat Ini</p>
+      <p class="text-2xl font-black text-slate-900"><%= format_money(@pocket.current_balance) %></p>
+    </div>
+
+    <%= form_with url: adjust_balance_pocket_path(@pocket), method: :post, class: "space-y-6" do |f| %>
+      <div class="space-y-3">
+        <label class="flex items-center gap-3 p-3 border-2 border-slate-900 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+          <%= f.check_box :zero_balance, 
+              data: { 
+                adjust_balance_target: "zeroCheckbox",
+                action: "change->adjust-balance#toggleZero" 
+              },
+              class: "w-5 h-5 rounded border-2 border-slate-900 text-indigo-500 focus:ring-indigo-500" %>
+          <span class="text-sm font-black text-slate-900">Reset ke Rp 0</span>
+        </label>
+
+        <div class="space-y-2">
+          <%= f.label :target_balance, "Saldo Baru", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+          <%= f.number_field :target_balance, 
+              value: @pocket.current_balance.to_i,
+              step: "1",
+              data: { adjust_balance_target: "amountInput" },
+              class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-3 px-4 text-slate-900 placeholder:text-slate-300 focus:bg-orange-50 outline-none transition-all font-bold" %>
+        </div>
+
+        <div class="space-y-2">
+          <%= f.label :note, "Catatan (Opsional)", class: "block text-xs font-black uppercase tracking-widest text-slate-900 ml-1" %>
+          <%= f.text_field :note, 
+              placeholder: "Koreksi biaya admin, bunga, dll",
+              class: "w-full bg-white border-2 border-slate-900 rounded-2xl py-3 px-4 text-slate-900 placeholder:text-slate-300 focus:bg-orange-50 outline-none transition-all font-bold" %>
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <%= f.submit "Sesuaikan Saldo", class: "w-full py-4 bg-indigo-400 border-2 border-slate-900 text-white font-black uppercase tracking-widest rounded-2xl active:scale-95 transition-all cursor-pointer" %>
+      </div>
+    <% end %>
+  </div>
+</div>

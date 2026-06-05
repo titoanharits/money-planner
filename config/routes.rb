@@ -8,7 +8,11 @@ Rails.application.routes.draw do
     root "dashboard#index", as: :authenticated_root
     
     resource :settings, only: [:edit, :update]
-    resources :pockets
+    resources :pockets do
+      member do
+        post :adjust_balance
+      end
+    end
     resources :transactions
     resources :categories
   end

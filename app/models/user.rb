@@ -8,6 +8,7 @@ class User < ApplicationRecord
   has_many :budgets, dependent: :destroy
   has_many :transactions, dependent: :destroy
   has_many :pockets, dependent: :destroy
+  has_many :balance_adjustments, dependent: :destroy
 
   SUPPORTED_CURRENCIES = [
     ["IDR - Rupiah Indonesia", "IDR"],

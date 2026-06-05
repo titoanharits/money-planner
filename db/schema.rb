@@ -10,7 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_05_064049) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_05_091657) do
+  create_table "balance_adjustments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.decimal "amount", precision: 15, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.decimal "new_balance", precision: 15, scale: 2, null: false
+    t.string "note"
+    t.bigint "pocket_id", null: false
+    t.decimal "previous_balance", precision: 15, scale: 2, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["pocket_id"], name: "index_balance_adjustments_on_pocket_id"
+    t.index ["user_id"], name: "index_balance_adjustments_on_user_id"
+  end
+
   create_table "budgets", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.decimal "amount", precision: 15, scale: 2
     t.bigint "category_id", null: false
@@ -81,6 +94,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_05_064049) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "balance_adjustments", "pockets"
+  add_foreign_key "balance_adjustments", "users"
   add_foreign_key "budgets", "categories"
   add_foreign_key "budgets", "users"
   add_foreign_key "categories", "users"

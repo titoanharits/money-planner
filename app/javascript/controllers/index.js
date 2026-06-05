@@ -33,3 +33,6 @@ application.register("transaction-type", TransactionTypeController)
 
 import TomSelectController from "./tom_select_controller"
 application.register("tom-select", TomSelectController)
+
+import AdjustBalanceController from "./adjust_balance_controller"
+application.register("adjust-balance", AdjustBalanceController)

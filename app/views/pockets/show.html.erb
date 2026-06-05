@@ -1,5 +1,5 @@
 <%# app/views/pockets/show.html.erb %>
-<div class="pb-24 space-y-8">
+<div data-controller="adjust-balance" class="pb-24 space-y-8">
   <%# Detail Card %>
   <div class="animate-fade-up bg-white border-2 border-slate-900 p-6 rounded-3xl" style="background-color: <%= @pocket.color %>;">
     <div class="flex justify-between items-start mb-6">
@@ -7,6 +7,9 @@
         <%= @pocket.icon %>
       </div>
       <div class="flex gap-2">
+        <%= link_to "#", data: { action: "click->adjust-balance#toggleModal" }, class: "w-10 h-10 bg-indigo-200 border-2 border-slate-900 rounded-xl flex items-center justify-center active:scale-95 transition-all", title: "Sesuaikan Saldo" do %>
+          <i data-lucide="calculator" class="w-5 h-5 text-slate-900"></i>
+        <% end %>
         <%= link_to edit_pocket_path(@pocket), class: "w-10 h-10 bg-white/50 border-2 border-slate-900 rounded-xl flex items-center justify-center active:scale-95 transition-all" do %>
           <i data-lucide="pencil" class="w-5 h-5 text-slate-900"></i>
         <% end %>
@@ -71,4 +74,39 @@
       <% end %>
     </div>
   </div>
+
+  <%# History Penyesuaian Saldo %>
+  <% if @adjustments.any? %>
+    <div class="animate-fade-up space-y-4" style="animation-delay: 200ms">
+      <div class="flex justify-between items-center px-1">
+        <h3 class="font-black text-xs uppercase tracking-widest text-slate-900">Riwayat Penyesuaian</h3>
+      </div>
+
+      <div class="space-y-3">
+        <% @adjustments.each do |adj| %>
+          <div class="flex items-center justify-between bg-white border-2 border-slate-900 p-3 rounded-2xl">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl border-2 border-slate-900 flex items-center justify-center text-xl shrink-0 bg-indigo-200">
+                ⚖️
+              </div>
+              <div>
+                <p class="font-black text-sm text-slate-900"><%= adj.note.presence || "Penyesuaian Saldo" %></p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase"><%= adj.created_at.strftime("%d %b %H:%M") %></p>
+              </div>
+            </div>
+            <div class="text-right flex flex-col items-end">
+              <% if adj.amount > 0 %>
+                <p class="font-black text-sm text-emerald-500">+<%= format_money(adj.amount) %></p>
+              <% else %>
+                <p class="font-black text-sm text-rose-500"><%= format_money(adj.amount) %></p>
+              <% end %>
+              <p class="text-[10px] font-black text-slate-500">Saldo: <%= format_money(adj.new_balance) %></p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%= render "adjust_balance_modal" %>
 </div>
