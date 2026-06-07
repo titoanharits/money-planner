@@ -3,8 +3,7 @@ class BudgetGeneratorService
     @user = user
     @income = income.to_f
     @profile = profile
-    @month = Date.today.month
-    @year = Date.today.year
+    @period_start = user.period_start_for
   end
 
   def call
@@ -27,10 +26,9 @@ class BudgetGeneratorService
         # 3. Create atau update budget bulan ini
         budget = category.budgets.find_or_initialize_by(
           user: @user,
-          month: @month,
-          year: @year
+          period_start_date: @period_start
         )
-        budget.update!(amount: amount)
+        budget.update!(amount: amount, month: @period_start.month, year: @period_start.year)
       end
 
       # Default Income Categories

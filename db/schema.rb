@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_05_091657) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_08_020000) do
   create_table "balance_adjustments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.decimal "amount", precision: 15, scale: 2, null: false
     t.datetime "created_at", null: false
@@ -29,10 +29,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_05_091657) do
     t.bigint "category_id", null: false
     t.datetime "created_at", null: false
     t.integer "month"
+    t.date "period_start_date", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.integer "year"
     t.index ["category_id"], name: "index_budgets_on_category_id"
+    t.index ["user_id", "category_id", "period_start_date"], name: "idx_budgets_unique_period", unique: true
     t.index ["user_id"], name: "index_budgets_on_user_id"
   end
 

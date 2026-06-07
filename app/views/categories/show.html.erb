@@ -15,7 +15,7 @@
   <div class="animate-fade-up grid grid-cols-2 gap-4" style="animation-delay: 100ms">
     <div class="bg-white border-2 border-slate-900 p-4 rounded-2xl">
       <p class="text-2xs font-black text-slate-400 uppercase mb-1">Budgeted</p>
-      <p class="text-lg font-black text-indigo-400"><%= format_money(@category.current_budget&.amount || 0) %></p>
+      <p class="text-lg font-black text-indigo-400"><%= format_money(@category.current_budget_for(current_user)&.amount || 0) %></p>
     </div>
     <div class="bg-white border-2 border-slate-900 p-4 rounded-2xl">
       <p class="text-2xs font-black text-slate-400 uppercase mb-1">Spent This Month</p>

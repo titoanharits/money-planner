@@ -1,0 +1,114 @@
+<div class="pb-24 space-y-6" data-controller="budget-planner">
+  
+  <%# 1. Period Navigator %>
+  <div class="flex items-center justify-between bg-white border-2 border-slate-900 rounded-2xl p-4">
+    <%= link_to budget_planner_path(period: @prev_period_start), class: "p-2 hover:bg-slate-100 rounded-xl transition-colors active:scale-95" do %>
+      <i data-lucide="chevron-left" class="w-5 h-5 text-slate-900"></i>
+    <% end %>
+
+    <div class="text-center">
+      <h3 class="font-black text-slate-900 uppercase tracking-widest text-sm">
+        <%= @period_start.strftime("%B %Y") %>
+      </h3>
+      <p class="text-2xs font-bold text-slate-500 uppercase tracking-widest">
+        <%= @period_start.strftime("%d %b") %> - <%= @period_end.strftime("%d %b") %>
+      </p>
+    </div>
+
+    <% if @next_period_start %>
+      <%= link_to budget_planner_path(period: @next_period_start), class: "p-2 hover:bg-slate-100 rounded-xl transition-colors active:scale-95" do %>
+        <i data-lucide="chevron-right" class="w-5 h-5 text-slate-900"></i>
+      <% end %>
+    <% else %>
+      <div class="w-9 h-9"></div> <%# Placeholder to balance flex %>
+    <% end %>
+  </div>
+
+  <%# 2. Allocation Summary Card %>
+  <div class="bg-indigo-400 border-2 border-slate-900 p-6 rounded-2xl text-white">
+    <div class="flex justify-between items-start mb-6">
+      <div>
+        <p class="text-[10px] uppercase font-black text-indigo-900 tracking-widest mb-1">Income Periode Ini</p>
+        <h2 class="text-2xl font-black text-white" data-budget-planner-target="totalIncome" data-value="<%= @total_income %>">
+          <%= format_money(@total_income) %>
+        </h2>
+      </div>
+    </div>
+    
+    <div class="w-full bg-slate-900/20 border-2 border-slate-900 h-5 rounded-xl overflow-hidden relative">
+      <div class="bg-lime-300 h-full border-r-2 border-slate-900 transition-all duration-300" 
+           data-budget-planner-target="allocationBar"
+           style="width: <%= @total_income > 0 ? [@total_allocated.to_f / @total_income * 100, 100].min : 0 %>%"></div>
+    </div>
+
+    <div class="flex justify-between items-start mt-2">
+      <p class="text-[10px] font-black uppercase text-indigo-900" data-budget-planner-target="allocatedText">
+        Ter-alokasi: <%= format_money(@total_allocated) %>
+      </p>
+      <div class="text-right">
+        <p class="text-[10px] font-black uppercase text-white" data-budget-planner-target="remainingText">
+          Sisa: <%= format_money(@total_income - @total_allocated) %>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <%# 3. Budget Inputs Form %>
+  <%= form_with(url: budget_planner_path, method: :patch, class: "space-y-4") do |f| %>
+    <%= f.hidden_field :period_start, value: @period_start %>
+
+    <% @expense_categories.each do |category| %>
+      <% 
+        budget = @budgets_map[category.id]
+        spent = @category_spent_map[category.id] || 0
+        amount = budget&.amount || 0
+        percent = amount > 0 ? (spent.to_f / amount * 100).to_i : 0
+      %>
+      <div class="bg-white border-2 border-slate-900 rounded-2xl p-4 transition-all">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-12 h-12 rounded-xl border-2 border-slate-900 flex items-center justify-center text-2xl" 
+               style="background-color: <%= category.color %>;">
+            <%= category.icon %>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h4 class="font-black text-slate-900 text-sm truncate"><%= category.name %></h4>
+            <p class="text-[10px] font-black text-orange-400 uppercase tracking-widest mt-0.5">
+              Terpakai: <%= format_money(spent) %>
+            </p>
+          </div>
+        </div>
+
+        <div class="relative mb-3">
+          <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-900 font-black text-xs uppercase"><%= current_user.currency %></div>
+          <%= f.number_field "budgets[#{category.id}]", 
+              value: amount, 
+              min: 0,
+              disabled: !@is_current_period,
+              data: { 
+                action: "input->budget-planner#calculate", 
+                budget_planner_target: "budgetInput" 
+              },
+              class: "w-full bg-slate-50 border-2 border-slate-900 rounded-xl py-3 pl-14 pr-4 text-slate-900 outline-none focus:bg-orange-50 focus:border-indigo-500 transition-all font-black text-right #{!@is_current_period ? 'opacity-50 cursor-not-allowed' : ''}" %>
+        </div>
+
+        <% if amount > 0 %>
+          <div class="relative w-full bg-slate-100 border-2 border-slate-900 h-2 rounded-lg overflow-hidden">
+            <div class="absolute top-0 left-0 h-full transition-all duration-700 ease-out <%= percent > 100 ? 'bg-red-500' : '' %>" 
+                 style="width: <%= [percent, 100].min %>%; background-color: <%= percent > 100 ? '' : category.color %>; border-right-width: <%= percent > 0 ? '2px' : '0' %>; border-color: rgb(15 23 42);">
+            </div>
+          </div>
+          <p class="text-right text-[9px] font-black text-slate-400 mt-1 uppercase"><%= percent %>% Digunakan</p>
+        <% else %>
+          <p class="text-right text-[9px] font-black text-slate-400 mt-1 uppercase italic">Belum dialokasikan</p>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if @is_current_period %>
+      <div class="pt-4 sticky bottom-24 z-10">
+        <%= f.submit "Simpan Semua Budget", 
+            class: "w-full py-4 bg-lime-400 border-2 border-slate-900 text-slate-900 font-black uppercase tracking-widest rounded-2xl active:scale-95 transition-all cursor-pointer shadow-[4px_4px_0_0_rgba(15,23,42,1)]" %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

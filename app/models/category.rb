@@ -13,9 +13,9 @@ class Category < ApplicationRecord
 
   before_destroy :prevent_system_category_deletion
 
-  # Helper untuk mendapatkan budget bulan berjalan
-  def current_budget(month = Date.today.month, year = Date.today.year)
-    budgets.find_by(month: month, year: year)
+  def current_budget_for(user, date = Date.today)
+    period_start = user.period_start_for(date)
+    budgets.find_by(period_start_date: period_start)
   end
 
   def total_spent_in_month(date = Date.today)
@@ -27,16 +27,16 @@ class Category < ApplicationRecord
   def update_monthly_budget(amount, user)
     return if amount.blank?
     
+    period_start = user.period_start_for
     if expense?
       budget = budgets.find_or_initialize_by(
         user: user,
-        month: Date.today.month,
-        year: Date.today.year
+        period_start_date: period_start
       )
-      budget.update(amount: amount)
+      budget.update(amount: amount, month: period_start.month, year: period_start.year)
     else
       # Hapus budget jika kategori berubah jadi income atau transfer
-      budgets.where(month: Date.today.month, year: Date.today.year).destroy_all
+      budgets.where(period_start_date: period_start).destroy_all
     end
   end
 

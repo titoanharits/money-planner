@@ -8,6 +8,8 @@ Rails.application.routes.draw do
     root "dashboard#index", as: :authenticated_root
     
     resource :settings, only: [:edit, :update]
+    get "budget_planner", to: "budget_planner#index", as: :budget_planner
+    patch "budget_planner", to: "budget_planner#update"
     resources :pockets do
       member do
         post :adjust_balance

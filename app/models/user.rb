@@ -61,7 +61,12 @@ class User < ApplicationRecord
   end
 
   def total_monthly_budget(date = Date.today)
-    budgets.where(month: date.month, year: date.year).sum(:amount)
+    period_start = current_billing_period(date).first
+    budgets.for_period(period_start).sum(:amount)
+  end
+
+  def period_start_for(date = Date.today)
+    current_billing_period(date).first
   end
 
   def expenses_by_category_map(date = Date.today)

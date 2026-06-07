@@ -27,7 +27,6 @@ class CategoriesController < ApplicationController
     @category.system_default = false # ensure user cannot create system category
     
     if @category.save
-      @category.update_monthly_budget(params[:initial_budget], current_user)
       redirect_to categories_path, notice: "Kategori berhasil dibuat!"
     else
       render :new, status: :unprocessable_entity
@@ -36,7 +35,6 @@ class CategoriesController < ApplicationController
 
   def update
     if @category.update(category_params)
-      @category.update_monthly_budget(params[:initial_budget], current_user)
       redirect_to categories_path, notice: "Category updated successfully!"
     else
       render :edit, status: :unprocessable_entity
@@ -64,7 +62,7 @@ class CategoriesController < ApplicationController
 
   private
   def set_page_title
-    @page_title = "My Budget"
+    @page_title = "Categories"
   end
 
   def set_category

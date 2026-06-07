@@ -52,6 +52,11 @@
         </div>
       </div>
 
+      <%= link_to budget_planner_path, class: "w-full h-14 bg-lime-400 border-2 border-slate-900 rounded-2xl flex items-center justify-center gap-3 font-bold uppercase tracking-widest text-slate-900 active:scale-95 transition-all mb-4 shadow-[4px_4px_0_0_rgba(15,23,42,1)]" do %>
+        <i data-lucide="calculator" class="w-5 h-5"></i>
+        Atur Budget Periode Ini
+      <% end %>
+
       <%= link_to new_category_path, class: "w-full h-14 bg-indigo-400 border-2 border-slate-900 rounded-2xl flex items-center justify-center gap-3 font-bold uppercase tracking-widest text-white active:scale-95 transition-all mb-8" do %>
         Tambah Kategori
       <% end %>
@@ -65,7 +70,7 @@
 
         <% @expense_categories.each do |category| %>
           <% 
-            budget = category.current_budget
+            budget = category.current_budget_for(current_user)
             spent = @category_spent_map[category.id] || 0 
             percent = (budget && budget.amount > 0) ? ((spent.to_f / budget.amount) * 100).to_i : 0
           %>

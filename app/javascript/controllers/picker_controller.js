@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import 'emoji-picker-element';
 
 export default class extends Controller {
-  static targets = ["iconInput", "iconPreview", "colorInput", "emojiPickerContainer", "budgetContainer"]
+  static targets = ["iconInput", "iconPreview", "colorInput", "emojiPickerContainer"]
 
   connect() {
     // Menutup picker saat klik di luar area
@@ -10,7 +10,6 @@ export default class extends Controller {
       if (!this.element.contains(e.target)) this.emojiPickerContainerTarget.classList.add('hidden')
     }
     document.addEventListener('click', this.closePickerOutside)
-    this.toggleBudget({ target: this.element.querySelector('select[name*="category_type"]') })
   }
 
   disconnect() {
@@ -37,16 +36,6 @@ export default class extends Controller {
     
     // Tambahkan feedback visual pada warna yang dipilih
     event.currentTarget.classList.add('ring-4', 'ring-blue-500/30', 'scale-110')
-  }
-
-  toggleBudget(event) {
-    const type = event.target.value
-    // Jika type adalah 'income', sembunyikan budget container
-    if (type === 'income') {
-      this.budgetContainerTarget.classList.add('hidden')
-    } else {
-      this.budgetContainerTarget.classList.remove('hidden')
-    }
   }
 
   toggleEmojiPicker(e) {

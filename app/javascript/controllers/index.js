@@ -36,3 +36,6 @@ application.register("tom-select", TomSelectController)
 
 import AdjustBalanceController from "./adjust_balance_controller"
 application.register("adjust-balance", AdjustBalanceController)
+
+import BudgetPlannerController from "./budget_planner_controller"
+application.register("budget-planner", BudgetPlannerController)
